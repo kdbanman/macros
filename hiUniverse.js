@@ -1,11 +1,3 @@
-/*
-TODO:
-- read about animation in paper to check for draw/frame thingys
-    - pay attention: if selective updating is possible, that'd be nifty
-        - wait, no.  just don't even make Paths for BLOCK state... (for now)
-- read about interfaces in paper so i can click 
-- make function that maps state object to 
-*/
 var cart = function (i, j) {
     "use strict";
     return new Point(i + 0.5 * j, 0.866025404 * j);
@@ -137,7 +129,7 @@ var gameState = (function () {
                 //vizUnit[i][j].visible = false;
                 
                 vizOverlay[i].push(newHex(i, j));
-                vizOverlay[i][j].fillColor = new Color(0.1,0.1,0.1,0.3);
+                vizOverlay[i][j].fillColor = new Color(0.1,0.1,0.1,0.1);
                 
                 //DEBUG CLICK OVERLAY
                 vizOverlay[i][j].onClick = (function () {
@@ -160,9 +152,9 @@ var gameState = (function () {
         }
     };
     
-    // this should be an env property to check for boundary/block
     var getNbrs = function (x, y) {
         "use strict";
+        //ROADMAP:  this should be a cell property built after blocks are placed
         
         if (x === 0) {
             if (y === 0) {
@@ -224,7 +216,9 @@ var gameState = (function () {
         }
     };
     
+    // Partitions array of neighbors into neighbors of greater and less TRANS
     var transNbrPart = function (i, j) {
+        //ROADMAP: this will likely be tossed
         var greater = [];
         var lesser = [];
         var nbrs = getNbrs(i, j);
@@ -239,9 +233,7 @@ var gameState = (function () {
         return [greater, lesser];
     }
     
-    //TESTING
     //DEBUG
-    
     curr[1][1].unit.str = 30;
     curr[1][1].trans.amt = 3;
     curr[0][0].unit.str = 10;
@@ -261,6 +253,22 @@ var gameState = (function () {
                     var greaterTrans = diffNbr[0];
                     var lesserTrans = diffNbr[1];
                     
+                    //TODO:
+                    //get all behaviours listed and prioritized
+                    //- trans spread
+                    //    - happens regardless
+                    //        - dissipates because of floor division into neighbors
+                    //- unit take damage
+                    //    - enemy nbr or not, next STR is minimum of current STR and sum of +friend -enemy
+                    //- unit die
+                    //    - current strength is <= 0, next dead
+                    //        - TRANS drop?
+                    //- unit buffer movement
+                    //- unit move to
+                    //    - sum STR from threshold buffered nbrs +friend -enemy
+                    //- unit move from
+                    //    - if self threshold buffer, then subtact curr STR from next (don't kill, others might be moving in)
+                    //    - trans deposit on move from
                     
                     // manage trans
                     ///////////////
@@ -280,9 +288,6 @@ var gameState = (function () {
                                         
                     // manage unit
                     //////////////
-                    
-                    //TODO:
-                    // str is super not conserved right now
                     
                     // remove unit for all trans greater cells (will 'move' there)
                     if (greaterTrans.length > 0) {
@@ -332,8 +337,6 @@ var gameState = (function () {
                         vizUnit[i][j].visible = false;
                     }
                 }
-                
-                //DEBUG OVERLAY
                 
             });
         },
