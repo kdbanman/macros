@@ -9,6 +9,7 @@ Architecture
 - client index query is served setup.js:
     - player configures a game
         - places BLOCK and BASEPOS
+        - chooses start drop and start trans amounts
     - player commits level to server
     - server readies the url with game.js for that game 
 	
@@ -52,6 +53,7 @@ unit - factioned battle units to be controlled by players
 trans - movement pheremone for units to follow
 
 - drawable
+- left by moving units to encourage other units to move
 - player's units are only affected by that player's trans
 - multiple player's trans may be in one cell
 - every cycle, half of the current trans for each player propagates into 
@@ -70,9 +72,9 @@ drop - unit production location for each player
 - drawable
 - an active drop cell will deposit str for its player
     - either a new unit will be created, or an existing one will be added to
-- HAS GLOBAL STATE
-- str drop rate determined globally
-- 
+- NOTE: don't do it SC style with a travelling unit placer that is separate
+  from the automata ruleset.  avoid global state because of synchronization
+  complexity.
 
 Invariant
 =========
@@ -82,12 +84,9 @@ the following must be true for the duration of the game
 - > 1 players
 - > 1 factions
 - # players >= # factions
-- > 0 drop cell per player
-- exactly 1 active drop cell per player
 
 Initial
 =======
 
 - each player must have the same total base str
 - no unit or trans may be present
-
