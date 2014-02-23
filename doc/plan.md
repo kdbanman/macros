@@ -1,10 +1,10 @@
 #### Prioritized TODO
 
-
 - set up file structure
-- 
 
-# Vision
+# Game
+
+## Vision
 
 macroscopic battle.  blur the lines between army of units and amorphous war
 creature.  control your war blob with pheremones.  protect your base.  kills
@@ -33,11 +33,11 @@ because engine is a pure cellular automata.
 
 - - - -
 
-# Rules
+## Rules
 
-## Conditions
+### Conditions
 
-### Invariant
+#### Invariant
 
 the following must be true for the duration of the game
 
@@ -45,19 +45,19 @@ the following must be true for the duration of the game
 - 1 factions > 
 - number of players >= number of factions
 
-### Initial
+#### Initial
 
 - all invariants must hold
 - each player must have the same total base str
 - no unit or trans may be present
 
-### Win
+#### Win
 
 - single faction's base(s) remain
 
-## State
+### State
 
-### unit
+#### unit
 
 factioned battle units to be controlled by players
 
@@ -71,7 +71,7 @@ factioned battle units to be controlled by players
     - takes damage if sum(enemy neighbor str) > sum(friendly neighbor str)
         - positive difference is damage taken
 
-### trans
+#### trans
 
 movement pheremone for units to follow
 
@@ -85,14 +85,14 @@ movement pheremone for units to follow
       floor ( current trans / 12 ) 
     - dissipates from dropped remainders
 
-### base
+#### base
 
 immovable base to be protected from enemy players
 
 - str property is analogous to unit.str, so is attack/damage behaviour
 - each player must start with the same total str
 
-### drop
+#### drop
 
 unit production location for each player.  more kills -> higher drop rate. draw drop to shape war creature.
 
@@ -107,21 +107,45 @@ NOTE: don't do it SC style with a travelling unit placer that is separate
   from the automata ruleset.  avoid global state because of synchronization
   complexity.
 
+### Interface
+
+#### setup
+
+- tools to draw level boundaries and base patterns
+
+#### game
+
+- tools to draw trans and drop patterns
+    - patterns are drawn to a command stage
+
+##### command stage
+
+- stage can be added to while it is open
+- all staged commands are committed at once
+- immediate mode
+    - stage held open by mouse hold or shift key hold
+    - stage committed when both are released
+- plan mode
+    - stage held open until explicit commit by enter key or dedicated button
+
 - - - -
 
-# Constraints
+# Software
 
-- game state evolution must be fully deterministic and identical across all target platforms.
+## Constraints
 
+- entire system must be tolerant to dropped packets and poor/changing latency
+- must be some means for player to reconnect from disconnection or accidental back button
+- game state evolution must be fully deterministic and identical across all target platforms
 - external environment mutation must be through minimally sized command packets
 
 - - - -
 
-# Architecture
+## Architecture
 
 - client index query is served setup.js:
     - player configures a game
-        - places BLOCK and BASEPOS
+        - places BLOCK and BASE
         - chooses start drop and start trans amounts
     - player commits level to server
     - server readies the url with game.js for that game 
@@ -131,12 +155,13 @@ NOTE: don't do it SC style with a travelling unit placer that is separate
     - each player places DROP and commits readiness
     - server waits for all players to commit readiness
     - game begins
+        - server now denies other game url queries
     - client combined view and controller renders engine output and serves
       local player commands to server
     - server waits for commands from all clients then broadcasts packet of
       engine calls to each client
 
-## Cell
+### Cell
 
     {neighbors: [cell, cell, ..., cell],
      state: {unit: {player: integer,
@@ -152,7 +177,7 @@ NOTE: don't do it SC style with a travelling unit placer that is separate
              drop: {player: integer,
                     active: boolean}}}
 
-## Command Packet
+### Command Packet
 
     {trans: [{location: {x: integer,
                          y: integer},
