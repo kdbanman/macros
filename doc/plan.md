@@ -1,11 +1,10 @@
-Prioritized TODO
-================
+#### Prioritized TODO
+
 
 - set up file structure
-- continue at TODO below
+- 
 
-Pitch
-=====
+# Vision
 
 macroscopic battle.  blur the lines between army of units and amorphous war
 creature.  control your war blob with pheremones.  protect your base.  kills
@@ -32,32 +31,35 @@ multiplayer only.  ai can come later.  (minimal control interface -> ai battle
 could be another way to play the game:)  game state is completely deterministic
 because engine is a pure cellular automata.
 
+- - - -
 
-Invariant
-=========
+# Rules
+
+## Conditions
+
+### Invariant
 
 the following must be true for the duration of the game
 
-- > 1 players
-- > 1 factions
-- # players >= # factions
+- players > 1 
+- 1 factions > 
+- number of players >= number of factions
 
-Initial
-=======
+### Initial
 
 - all invariants must hold
 - each player must have the same total base str
 - no unit or trans may be present
 
-Win Condition
-=============
+### Win
 
 - single faction's base(s) remain
 
-State
-=====
+## State
 
-unit - factioned battle units to be controlled by players
+### unit
+
+factioned battle units to be controlled by players
 
 - str property is simultaneously attack power and health
 - moves in direction of maximum positive neighboring trans delta by filling
@@ -65,12 +67,13 @@ unit - factioned battle units to be controlled by players
     - if two of the same player's units may merge by moving to the same cell
     - cannot move into cells containing other player's unit
         - cells of differing factions collide, then positive delta remains
-        - TODO: cells of same faction, differing player collide?
-          TODO: cannot prevent collisions because of automata light speed
+        - TODO: cells of same faction, differing player collide? cannot prevent collisions because of automata light speed
     - takes damage if sum(enemy neighbor str) > sum(friendly neighbor str)
         - positive difference is damage taken
 
-trans - movement pheremone for units to follow
+### trans
+
+movement pheremone for units to follow
 
 - drawable
 - left by moving units to encourage other units to move
@@ -82,24 +85,39 @@ trans - movement pheremone for units to follow
       floor ( current trans / 12 ) 
     - dissipates from dropped remainders
 
-base - immovable base to be protected from enemy players
+### base
+
+immovable base to be protected from enemy players
 
 - str property is analogous to unit.str, so is attack/damage behaviour
 - each player must start with the same total str
 
-drop - unit production location for each player
+### drop
 
-more kills -> higher drop rate. draw drop to shape war creature.
+unit production location for each player.  more kills -> higher drop rate. draw drop to shape war creature.
 
-- drawable 
+must not be an advantage to place drop early or often.  the shape of the drop zone should be the only concern of the player.
+
+- drawable
 - a drop cell will deposit str for its player
     - either a new unit will be created, or an existing one will be added to
-- NOTE: don't do it SC style with a travelling unit placer that is separate
+    
+TODO: figure out drop semantics
+NOTE: don't do it SC style with a travelling unit placer that is separate
   from the automata ruleset.  avoid global state because of synchronization
   complexity.
 
-Architecture
-============
+- - - -
+
+# Constraints
+
+- game state evolution must be fully deterministic and identical across all target platforms.
+
+- external environment mutation must be through minimally sized command packets
+
+- - - -
+
+# Architecture
 
 - client index query is served setup.js:
     - player configures a game
@@ -118,8 +136,7 @@ Architecture
     - server waits for commands from all clients then broadcasts packet of
       engine calls to each client
 
-Cell
-====
+## Cell
 
     {neighbors: [cell, cell, ..., cell],
      state: {unit: {player: integer,
@@ -134,3 +151,12 @@ Cell
                     str: integer}
              drop: {player: integer,
                     active: boolean}}}
+
+## Command Packet
+
+    {trans: [{location: {x: integer,
+                         y: integer},
+              quantity: integer,
+              player: integer},
+              …],
+     drop: TODO}
