@@ -2,7 +2,8 @@
 
 - read thoroughly
     - add markers to areas that click as inconsistent and keep reading
-- include player id and game id in data models
+    - ensure inclusion of player id and game id in data models
+- extract backend requirements and add new subsection
 
 #### About this document
 
