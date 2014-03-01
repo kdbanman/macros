@@ -1,2 +1,3 @@
 - `socket` is connection-specific for `function (socket) { ... }` callbacks
     - location.host is TODO https://github.com/LearnBoost/socket.io-spec#uri-host
+    - READ ABOUT ROOMS

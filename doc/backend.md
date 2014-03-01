@@ -1,9 +1,10 @@
 #### Prioritized TODO
 
-- make sure things are actually REQUIREMENTS (see waterfall spec in meta)
 - think about the relationship between game state seeding and the comms module
     - clearly the comms module must be initialized with a game engine...
     - maybe that init parameter should be a seeded engine?  and the comms module serves the seed to the waiting client comms module?  then the client comms module knows how to stick the seed in the engine hole?  maybe the server comm module should just know how to stick seeds in holes too...
+
+- is omni mode really necessary?
 
 ## Vision
 
@@ -27,6 +28,9 @@ The game engine and view/controller are responsible for implementing the command
 ## Contracts
 
 - enforces full determinism of engine
+- enforces one time game engine initialization by seed object
+    - note: multi stage setup pipelines are the responsibility of the setup
+            application.  the enginet init is a single object.  period.
 - enforces engine mutation by single command object (packet)
 - enforces separation of view/controller and engine
     - view/controller is a command sender
@@ -35,23 +39,17 @@ The game engine and view/controller are responsible for implementing the command
 
 ## Communication
 
-client communication modules use closure-guarded player ids and game ids.
-server communication module tries to make sure ip address, game id, and player
-ids match as expected to prevent nefarious action.
-
 - client index query is served setup.js:
-    - player configures a game
-        - places BLOCK and BASE
-        - chooses start drop and start trans amounts
-        - chooses omni mode or not (possibly for testing only)
-    - player commits level to server
-    - server readies the url with game.js for that game 
+    - player configures a game from config app
+    - player commits game seed to server via url api, http post, ...
+    - server readies the url with seeded game
     - player directed to that url with game.js
+    - player client served game engine, waiting for seed
 
 - client game/<game_id> url query is served game.js
-    - each player places DROP and commits readiness
     - server waits for all players to commit readiness
-    - game begins, server now denies other game url queries
+    - game begins, server now locks players to current users
+        - other connections are viewers or refused
     - client combined view and controller renders engine output and serves
       local player commands to server
     - server waits for client command packets from all clients
