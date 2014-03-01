@@ -1,3 +1,7 @@
+#### Prioritized TODO
+
+- make this a list.  your 'sentences' are silly
+ 
 # Game
 
 Cellular automata RTS with minimal pheremone-style controls.
