@@ -1,15 +1,37 @@
 #### Prioritized TODO
 
-- read thoroughly
-    - make sure things are actually REQUIREMENTS
+- make sure things are actually REQUIREMENTS (see waterfall spec in meta)
+- think about the relationship between game state seeding and the comms module
+    - clearly the comms module must be initialized with a game engine...
+    - maybe that init parameter should be a seeded engine?  and the comms module serves the seed to the waiting client comms module?  then the client comms module knows how to stick the seed in the engine hole?  maybe the server comm module should just know how to stick seeds in holes too...
 
-# Software
+## Vision
+
+A multiplayer game communications engine that uses the AoE lock-step synchronization model.
+
+By enforcing full determinism of game state from an initial seed and a set of possible user commands, only command packets need to be shared between clients (and server).
+
+Clients may not mutate their own game state.  Client commands (empty or not) are gathered at the server, verified, and compiled into a master packet.  The master packet is broadcast to each waiting client, where it is integrated into the next iteration.
+
+The game engine and view/controller are responsible for implementing the commands.  The communications module is responsible for controlling client game engine synchronization.
 
 ## Constraints
 
-- entire system must be tolerant to dropped packets and poor/changing latency
+- must be protected against user session spoofing
+- must detect client divergence
+- must be user-id aware
 - must be some means for player to reconnect from disconnection or accidental back button
-- games must be protected against spoofing and cheating
+- must be tolerant to dropped packets and poor/changing latency
+- must be tolerant of different and changing engine iteration times
+
+## Contracts
+
+- enforces full determinism of engine
+- enforces engine mutation by single command object (packet)
+- enforces separation of view/controller and engine
+    - view/controller is a command sender
+    - engine is a command receiver
+        - command receipt enforces full state iteration
 
 ## Communication
 
@@ -45,5 +67,3 @@ ids match as expected to prevent nefarious action.
     - raw paper.js svg view/controller
     - can place drop and commit readiness for all players
     - serves master packets
-
-
