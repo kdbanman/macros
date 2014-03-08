@@ -1,5 +1,6 @@
 #### Prioritized TODO
 
+- change comms to gameroom where necessary
 - init config data spec
 
 ## Vision
