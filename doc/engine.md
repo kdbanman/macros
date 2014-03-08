@@ -2,7 +2,7 @@
 
 - init config data spec
 
-# Software
+## Vision
 
 Game engine with stepwise deterministic evolution with two publicly exposed interfaces.  One interface for view rendering, the other interface for mutation by server.
 
@@ -15,9 +15,11 @@ Contains metadata (players, server, creation time, etc) and game state.
 - game state evolution must be fully deterministic and identical across all target platforms
 - *see backend game engine requirements*
 
-- - - -
+## Contracts
 
-## Architecture
+- mutable only by server through client side comms module
+
+## State and Interfaces
 
 ### Non-cellular game state
 
