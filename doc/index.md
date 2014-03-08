@@ -6,7 +6,7 @@
 
 ## About the docs
 
-[###meta.md](meta.md)
+#[meta.md](meta.md)
 
 ## Server and Communications
 
