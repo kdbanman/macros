@@ -4,4 +4,18 @@
 
 - read thoroughly, deleting or moving stuff ONLY.  put shit in here if you get tickled by an idea
 
-[engine.md]()
+## About the docs
+
+[###meta.md](meta.md)
+
+## Server and Communications
+
+[###webapp.md](webapp.md)
+[###gameroom.md](gameroom.md)
+[###users.md](users.md)
+
+## Macros Game
+
+[###game.md](game.md)
+[###engine.md](engine.md)
+[###setup.md](setup.md)
