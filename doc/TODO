@@ -1,3 +1,5 @@
+- write express server to serve the doc directory, rendering md
+
 - learn vimgrep
     - change all comms module, communications module, backend to Manager
         - manager.md: Manager communicates.  Uses communication data to control Engine
