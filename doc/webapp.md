@@ -30,7 +30,7 @@ Each route has a dedicated specification.md file.  See each for more details.
 
 - /  (index query)
 
-- /setup
+- [/setup](setup.md)
     - game seed design zone
 
 - /games
@@ -40,13 +40,13 @@ Each route has a dedicated specification.md file.  See each for more details.
         - join game from list
             - links to /join?game_id=<game>
 
-- /create?seed_id=<seed>
-    - server spins up server game instance with seed
-        - see backend.md
-    - client served client game instance with seed
+- [/create?seed_id=<seed>](gameroom.md)
+    - server spins up server gameroom instance with seed
+    - client served client gameroom instance with seed
     - server connects to client over websocket
 
-- /join?game_id=<game>
-    - client served game instance with seed
+- [/join?game_id=<game>](gameroom.md)
+    - client served client gameroom instance with seed
+    - server connects to client over websocket
 
 - /replay

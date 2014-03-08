@@ -1,6 +1,6 @@
 #### Prioritized TODO
 
-- still may need comms-enforced 'setup' stage for things like faction choice, start location choice, ...
+- 'setup' stage for things like faction choice, start location choice may be better as a separate route/app.  does it make sense to organize everyone in an async environment, then transition to a sync one?
     - VSLICE: just an ugly html form
 - define Player data and Command data sent to client
     - see engine.md
@@ -10,9 +10,13 @@
     - decide if it should be an in memory database or just an object
     - define active game data model
 
+# Game Room
+
 ## Vision
 
-A multiplayer game communications engine that uses the AoE lock-step synchronization model.  Each server game instance is a "communications room" for clients playing together.
+A multiplayer game communications engine that uses the AoE lock-step synchronization model.  Each server gameroom instance is a "communications room" for client gamerooms playing together.
+
+Each gameroom can be in two main states: `setup` or `running`.  The first is for players to join and organize themselves.  The second is for the game engine to run.
 
 By enforcing full determinism of game state from an initial seed and a set of possible user commands, only command packets need to be shared between clients (and server).
 
@@ -22,6 +26,7 @@ The game engine and view/controller are responsible for implementing the command
 
 ## Constraints
 
+- must not allow games to start with invalid setup phase configuration
 - must detect client divergence of game engine state
 - must be protected against user session spoofing
 - must be user-id aware
@@ -37,6 +42,7 @@ The game engine and view/controller are responsible for implementing the command
 
 ### Game
 
+- enforces game engine recognition of invalid setup
 - enforces full determinism of engine
 - enforces one time game engine initialization by seed object
     - note: multi stage setup pipelines are the responsibility of the setup app
@@ -50,10 +56,18 @@ The game engine and view/controller are responsible for implementing the command
 
 ## Server Side
 
-- client /create?seed_id=<seed> url query is served game.js
-- client /join?game_id=<game> url query is served game.js
+- client /create?seed_id=<seed> url query is served gameroom
+- client /join?game_id=<game> url query is served gameroom
 
+### Setup Phase
+
+- gameengine setup commands are received async from clients and pushed out
+    - first-come-first-served semantics are fine for setup stage
+    - game engine
 - server waits for all players to commit readiness
+
+### Running Phase
+
 - game begins, server now locks players to current users
     - other connections are viewers or refused
 - client combined view and controller renders engine output and serves
@@ -72,6 +86,14 @@ The game engine and view/controller are responsible for implementing the command
 
 Command packets include game engine commands as well as timing control data (latency, framerate) and gamestate checksum.
 
+For motivation, read the AoE article.
+
 ### Client Packet
 
+- generation
+- latency
+- framerate
+
 ### Master Packet
+
+- iterations_per_command
