@@ -1,15 +1,19 @@
 #### Prioritized TODO
 
-- read thoroughly
-    - make sure things are actually REQUIREMENTS
-- game creation data spec
+- init config data spec
 
 # Software
+
+Game engine with stepwise deterministic evolution with two publicly exposed interfaces.  One interface for view rendering, the other interface for mutation by server.
+
+Identically hosted by server and all clients.
+
+Contains metadata (players, server, creation time, etc) and game state.
 
 ## Constraints
 
 - game state evolution must be fully deterministic and identical across all target platforms
-- external game state mutation may only be through minimal command packets
+- *see backend game engine requirements*
 
 - - - -
 
@@ -18,20 +22,20 @@
 ### Non-cellular game state
 
 ```
-{players: [player,
-           player,
+{players: [Player,
+           Player,
            ...
-           player],
- server: {ip: string},
- game: .ngine}
+           Player],
+ server: Server,          // see backend.md Server definition
+ creation_time: integer,  // time is Server time.
+ game: Engine}
            
-// player
+// Player
 {nickname: string,
  faction: integer,
  score: integer,
  drop_rate: integer,
- connection: {ip: string,
-              latency: integer,
+ connection: {latency: integer,
               millis_per_frame: integer}}
 ```
 
@@ -39,25 +43,23 @@
 
 - must be protected from mutation except by server
     - all stateful properties (environment, etc) hidden by closure
-    - all setters must only accept one call per engine instance
-        - server sets upon player connection to game.js
     - all getters return values, not references
 - render interface must be stable against cell/engine data model changes
     - getter return values should be as unstructured/primitve as possible
 
 ```
 {options: {move_threshold: integer,
-           initial_base_str: integer},
+           initial_base_str: integer,
+           initial_drop_rate: integer},
  environment: [[cell, cell, ..., cell],
                [cell, cell, ..., cell]],
  droplists: [droplist, droplist, ..., droplist],
  
- setMoveThreshold: function(integer),
- setInitialBaseStr: function(integer),
- setEnvironment: function(environment),
-
+ applyInitConfig: function(config object),  // callable only once
  applyCommands: function(command packet),
  iterate: function(),
+
+ // below functions are intended for use by view/renderer
 
  getUnitPlayer: function(x, y),  // integer
  getUnitFaction: function(x, y), // integer
