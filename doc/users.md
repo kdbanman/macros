@@ -1,8 +1,12 @@
-TODO:
+VSLICE_0:
 
-incorporate this into the right place
+- /register is a single text box.  that creates a user
+- /login is a single text box.  that logs him in or fails
 
-- global user authentication, no account, no make and no play
+#### Prioritized TODO
+
+- global user authentication
+- /register route
 
 ## User Data
 

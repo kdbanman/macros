@@ -1,14 +1,18 @@
 #### Prioritized TODO
 
-- think about the relationship between game state seeding and the comms module
-    - clearly the comms module must be initialized with a game engine...
-    - maybe that init parameter should be a seeded engine?  and the comms module serves the seed to the waiting client comms module?  then the client comms module knows how to stick the seed in the engine hole?  maybe the server comm module should just know how to stick seeds in holes too...
+- still may need comms-enforced 'setup' stage for things like faction choice, start location choice, ...
+    - VSLICE: just an ugly html form
+- define Player data and Command data sent to client
+    - see engine.md
+    - leave spot for Engine stuff
 
-- is omni mode really necessary?
+- specify active game database
+    - decide if it should be an in memory database or just an object
+    - define active game data model
 
 ## Vision
 
-A multiplayer game communications engine that uses the AoE lock-step synchronization model.
+A multiplayer game communications engine that uses the AoE lock-step synchronization model.  Each server game instance is a "communications room" for clients playing together.
 
 By enforcing full determinism of game state from an initial seed and a set of possible user commands, only command packets need to be shared between clients (and server).
 
@@ -18,8 +22,8 @@ The game engine and view/controller are responsible for implementing the command
 
 ## Constraints
 
+- must detect client divergence of game engine state
 - must be protected against user session spoofing
-- must detect client divergence
 - must be user-id aware
 - must be some means for player to reconnect from disconnection or accidental back button
 - must be tolerant to dropped packets and poor/changing latency
@@ -27,41 +31,47 @@ The game engine and view/controller are responsible for implementing the command
 
 ## Contracts
 
+### Server
+
+- enforces existence of session store for active games
+
+### Game
+
 - enforces full determinism of engine
 - enforces one time game engine initialization by seed object
-    - note: multi stage setup pipelines are the responsibility of the setup
-            application.  the enginet init is a single object.  period.
+    - note: multi stage setup pipelines are the responsibility of the setup app
 - enforces engine mutation by single command object (packet)
 - enforces separation of view/controller and engine
     - view/controller is a command sender
     - engine is a command receiver
         - command receipt enforces full state iteration
+- enforces model of player data sent to client
+    - (unenforced) engine specific data has a place within the model
 
-## Communication
+## Server Side
 
-- client index query is served setup.js:
-    - player configures a game from config app
-    - player commits game seed to server via url api, http post, ...
-    - server readies the url with seeded game
-    - player directed to that url with game.js
-    - player client served game engine, waiting for seed
+- client /create?seed_id=<seed> url query is served game.js
+- client /join?game_id=<game> url query is served game.js
 
-- client game/<game_id> url query is served game.js
-    - server waits for all players to commit readiness
-    - game begins, server now locks players to current users
-        - other connections are viewers or refused
-    - client combined view and controller renders engine output and serves
-      local player commands to server
-    - server waits for client command packets from all clients
-        - server validates each and combines into master command packet
-        - server applies master packet engine
-        - server iterates engine, adds resulting checksum to master packet
-        - server broadcasts master packet to each client
-        - server returns to waiting
+- server waits for all players to commit readiness
+- game begins, server now locks players to current users
+    - other connections are viewers or refused
+- client combined view and controller renders engine output and serves
+  local player commands to server
+- server waits for client command packets from all clients
+    - server validates each and combines into master command packet
+    - server applies master packet engine
+    - server iterates engine, adds resulting checksum to master packet
+    - server broadcasts master packet to each client
+    - server returns to waiting
 
-- omni/<game_id> url query served omni.js
-    - for testing
-    - can spoof any player id
-    - raw paper.js svg view/controller
-    - can place drop and commit readiness for all players
-    - serves master packets
+## Client Side
+ 
+
+## Command Packets
+
+Command packets include game engine commands as well as timing control data (latency, framerate) and gamestate checksum.
+
+### Client Packet
+
+### Master Packet

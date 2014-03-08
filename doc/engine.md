@@ -28,8 +28,7 @@ Contains metadata (players, server, creation time, etc) and game state.
            Player,
            ...
            Player],
- server: Server,          // see backend.md Server definition
- creation_time: integer,  // time is Server time.
+ creation_time: integer,  // time is server time.
  game: Engine}
            
 // Player
@@ -133,6 +132,10 @@ Contains metadata (players, server, creation time, etc) and game state.
 
 - all drop cells for one player comprise an environmentally embedded doubly
   linked list
+
+### Communications Packets
+
+Below are the engine-specific parts of the Command Packets defined in backend.md.
 
 ### Client Command Packet
 
