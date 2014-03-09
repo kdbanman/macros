@@ -8,20 +8,25 @@ something about which you need more detail, look lower in the document.
 
 Incremental, using vertical slice prototyping.
 
-Each vertical slice follows a waterfall development model.  Current phase slice must be specified completely and carefully, 
-    - Vision
-    - Constraints and high level requirements
-    - Implementation notes
-    - Data models
-    - Code
+Each vertical slice follows a waterfall development model.  Current phase slice must be specified completely and carefully with
 
-All implementation outside of the current slice may be
+- Vision
+- Constraints, contracts, and high level requirements
+- Data models and implementation notes
+
+Implementation within the current slice should be
+
+- documented
+- robust
+- maintainable
+
+Implementation outside of the current slice may be
 
 - ugly
 - hard-coded
 - hacky
 
-but it must obey the contractual requirements of the current slice.  In the requirement docs, the slice-specific notes are tagged. Ex: VSLICE_0
+but it must obey the contractual requirements of the current slice.  In the requirement docs, the slice-specific notes are tagged VSLICE
 
 At the "end" of a phase, all docs and implementation are copied to a slice-tagged directory for reference, and the slice code and clean requirements are pushed to the current development directory.
 
