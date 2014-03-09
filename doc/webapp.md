@@ -1,10 +1,3 @@
-## Prioritized TODO
-
-- register and login routes
-- include route notes from book
-- figure out which routes are necessary for VSLICE
-- correct url parameter syntax
-
 ## Vision
 
 A web application to support level creation, gameplay, game replay, and community for Macros.
@@ -50,3 +43,37 @@ Each route has a dedicated specification.md file.  See each for more details.
     - server connects to client over websocket
 
 - /replay
+
+## State
+
+### Persistent (Global)
+
+User Data
+
+- persistent storage of user data
+- will be modified lots as users play games and do stuff
+    - mongo!
+- shardable data model for horizontal scalability
+- properties are usernames
+
+```
+{user1: {games_played: [ordered,
+                        list,
+                        of,
+                        game,
+                        ids],
+         date_joined: "some date standard",
+         pass_hash:,
+         other_things...},
+ user2: ...}
+ ```
+
+Recorded Games
+
+### Transient (Per Server)
+
+Session Store
+
+Active Games
+
+- used to manage websocket gamerooms

@@ -1,15 +1,3 @@
-#### Prioritized TODO
-
-- 'setup' stage for things like faction choice, start location choice may be better as a separate route/app.  does it make sense to organize everyone in an async environment, then transition to a sync one?
-    - VSLICE: just an ugly html form
-- define Player data and Command data sent to client
-    - see engine.md
-    - leave spot for Engine stuff
-
-- specify active game database
-    - decide if it should be an in memory database or just an object
-    - define active game data model
-
 # Game Room
 
 ## Vision
