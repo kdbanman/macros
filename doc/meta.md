@@ -27,22 +27,7 @@ At the "end" of a phase, all docs and implementation are copied to a slice-tagge
 
 Hopefully, eventually, all the slices are complete:)
 
-## Current Phase
-
-### VSLICE_0: Game Communications Engine
-
-- comprehensive comms and processing logging is necessary
-    - not a redundantly stored, 10K docs per second, multi machine client ...
-    - just a couchdb db with a document storing game ids
-- a deterministic game engine is necessary
-    - not a linked-list dropping, str-conservative, buffered-movement-vector ...
-    - must obey command, hashing, etc. requirements of VSLICE_0
-- multiple clients necessary, so users are necessary
-    - not password authentication
-- an initial game state or two are necessary
-    - not a game setup application
-
-## Past Phases
+## Past VSLICE Phases
 
 the future
 

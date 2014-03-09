@@ -1,4 +1,4 @@
-#### Prioritized TODO
+#### non-VSLICE TODO
 
 - change comms to gameroom where necessary
 - init config data spec

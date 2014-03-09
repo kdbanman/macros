@@ -1,8 +1,4 @@
-VSLICE_0
-    - one or two test seeds within the server database are all that is required
-    - cruddy, stupid seeding app only necessary if hard-coding is unreasonable
-
-#### Prioritized TODO
+#### non-VSLICE TODO
 
 - detail main use case more
 

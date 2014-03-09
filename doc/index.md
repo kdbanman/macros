@@ -4,12 +4,27 @@ Running game engine architecture: [AoE 28.8](http://www.gamasutra.com/view/featu
 
 Websocket game with "rooms": [BrowserQuest](https://github.com/mozilla/BrowserQuest)
 
+## Current VSLICE Phase
+
+### VSLICE_0: Game Communications Engine
+
+- comprehensive comms and processing logging is necessary
+    - not a redundantly stored, 10K docs per second, multi machine client ...
+    - just a couchdb db with a document storing game ids
+- a deterministic game engine is necessary
+    - not a linked-list dropping, str-conservative, buffered-movement-vector ...
+    - must obey command, hashing, etc. requirements of VSLICE_0
+- multiple clients necessary, so users are necessary
+    - not password authentication
+- an initial game state or two are necessary
+    - not a game setup application
+    - cruddy, stupid seeding app only necessary if hard-coding is unreasonable
+
 ## About the Docs
 
 ###[meta.md](meta.md)
 
-- Describes development model
-- Tracks current vertical slice
+Describes development model and tracks past VSLICE phases.
 
 # Requirements
 

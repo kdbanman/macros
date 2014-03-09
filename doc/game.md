@@ -1,4 +1,4 @@
-#### Prioritized TODO
+#### non-VSLICE TODO
 
 - make this a list.  your 'sentences' are silly
  
