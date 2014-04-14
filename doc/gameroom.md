@@ -2,25 +2,37 @@
 
 ## Vision
 
-A multiplayer game communications engine that uses the AoE lock-step synchronization model.  Each server gameroom instance is a "communications room" for client gamerooms playing together.
+A multiplayer game communications engine that uses the AoE lock-step synchronization model.
+Each server gameroom instance is a "communications room" for clients playing together.
 
-Each gameroom can be in two main states: `setup` or `running`.  The first is for players to join and organize themselves.  The second is for the game engine to run.
+Each gameroom can be in two parent states: `setup` or `running`.
+The first is for players to join, organize themselves, and finalize the configuration.
+The second is for the game engine to run.
+
+Little (or, better, zero) engine code should be run on the server.
+Divergence/cheating detection is interface-based, independent of game engine implementation.
+Command conflicts are resolved client-side.
 
 By enforcing full determinism of game state from an initial seed and a set of possible user commands, only command packets need to be shared between clients (and server).
 
-Clients may not mutate their own game state.  Client commands (empty or not) are gathered at the server, verified, and compiled into a master packet.  The master packet is broadcast to each waiting client, where it is integrated into the next iteration.
+Clients may not mutate their own game state.
+Client commands (empty or not) are gathered at the server, verified, and compiled into a master packet.
+The master packet is broadcast to each waiting client, where it is integrated into the next iteration.
 
-The game engine and view/controller are responsible for implementing the commands.  The communications module is responsible for controlling client game engine synchronization.
+The game engine and view/controller are responsible for implementing the commands.
+The communications module is responsible for controlling client game engine synchronization.
 
 ## Constraints
 
-- must not allow games to start with invalid setup phase configuration
 - must detect client divergence of game engine state
+    - gamestate hashes generated client-side, compared server-side
 - must be protected against user session spoofing
 - must be user-id aware
+    - guest uuid if none supplied
 - must be some means for player to reconnect from disconnection or accidental back button
-- must be tolerant to dropped packets and poor/changing latency
+- must be tolerant to poor/changing latency
 - must be tolerant of different and changing engine iteration times
+- must be tolerant to dropped command packets
 
 ## Contracts
 
@@ -31,27 +43,37 @@ The game engine and view/controller are responsible for implementing the command
 ### Game
 
 - enforces game engine recognition of invalid setup
+    - server will naively try to synchronize everyone and run the engine when told
 - enforces full determinism of engine
-- enforces one time game engine initialization by seed object
-    - note: multi stage setup pipelines are the responsibility of the setup app
-- enforces engine mutation by single command object (packet)
-- enforces separation of view/controller and engine
+    - gamestate hash divergence halts game progress
+- enforces 2 game engine stages, setup and run
+    - multi stage setup pipelines are the responsibility of the submitting app
+- enforces engine mutation by single command packet composed of all client commands
     - view/controller is a command sender
     - engine is a command receiver
         - command receipt enforces full state iteration
-- enforces model of player data sent to client
-    - (unenforced) engine specific data has a place within the model
+    - command conflict resolution must be performed client-side
+- enforces header data model of comms-related player/game data sent to and from clients
+    - (unenforced) engine specific data is the packet body
 
 ## Server Side
 
-- client /create?seed_id=<seed> url query is served gameroom
+- authorized put/post to /create url creates gameroom with submitted content
+    - submitted content is game engine and engine seed
+    - response is the new waiting join/<gameroom_id> url
 - client /join?game_id=<game> url query is served gameroom
+    - client must receive game engine, seed, and current setup configuration
 
 ### Setup Phase
 
+- clients join with a put/post of username (default uuid if none)
+    - new client assigned an open socket
 - gameengine setup commands are received async from clients and pushed out
     - first-come-first-served semantics are fine for setup stage
-    - game engine
+    - setup configuration is allowed before all players have joined
+    - full configuration state is sent and broadcast with every change
+        - relatively infrequent, so redundancy and data weight is ok
+    NOTE: cannot just use setup commands, need full state.  players joining after some configuration is performed would need all commands in order.  just keep setup configuration minimal.
 - server waits for all players to commit readiness
 
 ### Running Phase

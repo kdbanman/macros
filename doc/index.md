@@ -8,9 +8,11 @@ Websocket game with "rooms": [BrowserQuest](https://github.com/mozilla/BrowserQu
 
 ### VSLICE_0: Game Communications Engine
 
+Engine- and seed-independent setup and synchronization locus for multiplayer game instances.
+
 - comprehensive comms and processing logging is necessary
-    - not a redundantly stored, 10K docs per second, multi machine client ...
-    - just a couchdb db with a document storing game ids
+    - not a redundantly stored, 100K docs per second, sharded ...
+    - just a couchdb or mongodb with a document storing game ids
 - a deterministic game engine is necessary
     - not a linked-list dropping, str-conservative, buffered-movement-vector ...
     - must obey command, hashing, etc. requirements of VSLICE_0
@@ -26,13 +28,13 @@ Websocket game with "rooms": [BrowserQuest](https://github.com/mozilla/BrowserQu
 
 Describes development model and tracks past VSLICE phases.
 
-# Requirements
+# TODO
 
 - Current VSLICE TODOs are listed per file in order of priority
 
 ## Server and Communications
 
-###[webapp.md](webapp.md)
+### [webapp.md](webapp.md)
 
 - include route notes from book
     - register and login routes
@@ -43,10 +45,7 @@ Describes development model and tracks past VSLICE phases.
     - should be an in memory database for potential sharding
     - define active game data model
 
-###[gameroom.md](gameroom.md)
-
-- 'setup' stage for things like faction choice, start location choice may be better as a separate route/app.  does it make sense to organize everyone in an async environment, then transition to a sync one?
-    - VSLICE: just an ugly html form that sends events and responds to them (server is still master)
+### [gameroom.md](gameroom.md)
 
 - define Player data and Command data sent to client
     - see engine.md
@@ -55,9 +54,9 @@ Describes development model and tracks past VSLICE phases.
 
 ## Macros Game
 
-###[game.md](game.md)
-###[engine.md](engine.md)
-###[setup.md](setup.md)
+### [game.md](game.md)
+### [engine.md](engine.md)
+### [setup.md](setup.md)
 
 # Prototype
 
