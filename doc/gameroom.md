@@ -6,9 +6,13 @@ A multiplayer game communications engine that uses the AoE lock-step synchroniza
 Each server gameroom instance is a "communications room" for clients playing together.
 If possible, RESTful style using a custom protocol over WebSockets.
 
-Each gameroom can be in two parent states: `setup` or `running`.
+Each playable gameroom can be in two parent states: `setup` or `running`.
 The first is for players to join, organize themselves, and finalize the configuration.
 The second is for the game engine to run.
+
+Each gameroom can be in child states of the two parent states, like iterating and paused.
+Further children (like lagging or not lagging as children of paused) are gameroom defined.
+The furthest child states are engine-specific, defined using a possible gameroom state transfer description language.
 
 Little (or, better, zero) engine code should be run on the server.
 Divergence/cheating detection is interface-based, independent of game engine implementation.
