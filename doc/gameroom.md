@@ -4,6 +4,7 @@
 
 A multiplayer game communications engine that uses the AoE lock-step synchronization model.
 Each server gameroom instance is a "communications room" for clients playing together.
+If possible, RESTful style using a custom protocol over WebSockets.
 
 Each gameroom can be in two parent states: `setup` or `running`.
 The first is for players to join, organize themselves, and finalize the configuration.
