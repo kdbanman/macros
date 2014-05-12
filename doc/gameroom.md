@@ -4,7 +4,7 @@
 
 A multiplayer game communications engine that uses the AoE lock-step synchronization model.
 Each server gameroom instance is a "communications room" for clients playing together.
-If possible, RESTful style using a custom protocol over WebSockets.
+If possible, RESTful style using a stateful message patterns over WebSockets.
 
 Each playable gameroom can be in two parent states: `setup` or `running`.
 The first is for players to join, organize themselves, and finalize the configuration.
@@ -15,7 +15,7 @@ Further children (like lagging or not lagging as children of paused) are gameroo
 The furthest child states are engine-specific, defined using a possible gameroom state transfer description language.
 
 Little (or, better, zero) engine code should be run on the server.
-Divergence/cheating detection is interface-based, independent of game engine implementation.
+Divergence/cheating detection is interface-based (ex. checksum of game state done client-side and sent to server).
 Command conflicts are resolved client-side.
 
 By enforcing full determinism of game state from an initial seed and a set of possible user commands, only command packets need to be shared between clients (and server).
@@ -29,7 +29,7 @@ The communications module is responsible for controlling client game engine sync
 
 ## Constraints
 
-- must detect client divergence of game engine state
+- must detect and react to client divergence of game engine state
     - gamestate hashes generated client-side, compared server-side
 - must be protected against user session spoofing
 - must be user-id aware
@@ -52,7 +52,7 @@ The communications module is responsible for controlling client game engine sync
 - enforces full determinism of engine
     - gamestate hash divergence halts game progress
 - enforces 2 game engine stages, setup and run
-    - multi stage setup pipelines are the responsibility of the submitting app
+    - multi stage setup pipelines are child states of setup
 - enforces engine mutation by single command packet composed of all client commands
     - view/controller is a command sender
     - engine is a command receiver

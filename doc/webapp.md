@@ -1,3 +1,8 @@
+#### non-VSLICE TODO
+
+- include route notes from book
+    - register and login routes
+
 ## Vision
 
 A web application to support level creation, gameplay, game replay, and community for Macros.

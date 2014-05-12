@@ -4,53 +4,47 @@ Running game engine architecture: [AoE 28.8](http://www.gamasutra.com/view/featu
 
 Websocket game with "rooms": [BrowserQuest](https://github.com/mozilla/BrowserQuest)
 
+Development model and past VSLICE phases: [meta.md](meta.md)
+
 ## Current VSLICE Phase
 
 ### VSLICE_0: Game Communications Engine
 
-Engine- and seed-independent setup and synchronization locus for multiplayer game instances.
+Game-independent setup, synchronization, and recording locus for multiplayer game instances.
 
-- comprehensive comms and processing logging is necessary
-    - not a redundantly stored, 100K docs per second, sharded ...
-    - just a couchdb or mongodb with a document storing game ids
-- a deterministic game engine is necessary
-    - not a linked-list dropping, str-conservative, buffered-movement-vector ...
-    - must obey command, hashing, etc. requirements of VSLICE_0
-- multiple clients necessary, so users are necessary
-    - not password authentication
-- an initial game state or two are necessary
-    - not a game setup application
-    - cruddy, stupid seeding app only necessary if hard-coding is unreasonable
+This is (ideally) a framework in which to build a game.
+The synchronization/recording runtime is offered as a service for game providers.
 
-## About the Docs
-
-###[meta.md](meta.md)
-
-Describes development model and tracks past VSLICE phases.
+A game community could be hosted on a service that deals with users, social, tournaments, rankings, etc.
+That game itself could be hosted on this service.
 
 # TODO
 
 - Current VSLICE TODOs are listed per file in order of priority
+- TODOs outside the scope of VSLICE are in the files themselves
 
 ## Server and Communications
 
-### [webapp.md](webapp.md)
-
-- include route notes from book
-    - register and login routes
-
-- figure out which routes are necessary for VSLICE
-
-- specify active game database
-    - should be an in memory database for potential sharding
-    - define active game data model
-
 ### [gameroom.md](gameroom.md)
+
+- define Comms-level room state tree
+    - configing
+        - full
+    - playing
+        - running
+        - paused
+        - lagging
+
+- design Comms-level packets to enable state transitions
+
+- what triggers game creation
 
 - define Player data and Command data sent to client
     - see engine.md
     - taken from webapp.State
-    - leave spot for Engine stuff
+    - header for Comms, body for Engine stuff
+
+- define active game data model
 
 ## Macros Game
 
