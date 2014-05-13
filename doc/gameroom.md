@@ -4,15 +4,12 @@
 
 A multiplayer game communications engine that uses the AoE lock-step synchronization model.
 Each server gameroom instance is a "communications room" for clients playing together.
-If possible, RESTful style using a stateful message patterns over WebSockets.
+Where possible, RESTful style using a stateful message patterns over WebSockets.
 
 Each playable gameroom can be in two parent states: `setup` or `running`.
 The first is for players to join, organize themselves, and finalize the configuration.
 The second is for the game engine to run.
-
-Each gameroom can be in child states of the two parent states, like iterating and paused.
-Further children (like lagging or not lagging as children of paused) are gameroom defined.
-The furthest child states are engine-specific, defined using a possible gameroom state transfer description language.
+Lagging is a substate of running because lag detection during asyncronous setup state is impossible.
 
 Little (or, better, zero) engine code should be run on the server.
 Divergence/cheating detection is interface-based (ex. checksum of game state done client-side and sent to server).
@@ -20,7 +17,7 @@ Command conflicts are resolved client-side.
 
 By enforcing full determinism of game state from an initial seed and a set of possible user commands, only command packets need to be shared between clients (and server).
 
-Clients may not mutate their own game state.
+Clients should not mutate their own game state.
 Client commands (empty or not) are gathered at the server, verified, and compiled into a master packet.
 The master packet is broadcast to each waiting client, where it is integrated into the next iteration.
 
@@ -31,7 +28,6 @@ The communications module is responsible for controlling client game engine sync
 
 - must detect and react to client divergence of game engine state
     - gamestate hashes generated client-side, compared server-side
-- must be protected against user session spoofing
 - must be user-id aware
     - guest uuid if none supplied
 - must be some means for player to reconnect from disconnection or accidental back button
@@ -39,11 +35,17 @@ The communications module is responsible for controlling client game engine sync
 - must be tolerant of different and changing engine iteration times
 - must be tolerant to dropped command packets
 
+## Service Model
+
+Game is constructed using the framework implementing the client side of gameroom.
+Authorized services creates a gameroom, then serves the client the game.
+The served game connects to the newly created gameroom.
+
 ## Contracts
 
-### Server
+### Client
 
-- enforces existence of session store for active games
+- client must already be served game engine
 
 ### Game
 
@@ -51,7 +53,7 @@ The communications module is responsible for controlling client game engine sync
     - server will naively try to synchronize everyone and run the engine when told
 - enforces full determinism of engine
     - gamestate hash divergence halts game progress
-- enforces 2 game engine stages, setup and run
+- enforces 2 main game engine stages, setup and run
     - multi stage setup pipelines are child states of setup
 - enforces engine mutation by single command packet composed of all client commands
     - view/controller is a command sender
@@ -61,13 +63,14 @@ The communications module is responsible for controlling client game engine sync
 - enforces header data model of comms-related player/game data sent to and from clients
     - (unenforced) engine specific data is the packet body
 
-## Server Side
+## Server
 
-- authorized put/post to /create url creates gameroom with submitted content
-    - submitted content is game engine and engine seed
+- authorized put/post to /create url creates gameroom
     - response is the new waiting join/<gameroom_id> url
-- client /join?game_id=<game> url query is served gameroom
-    - client must receive game engine, seed, and current setup configuration
+- client /play/<game_id> url query (over ws://) is connected to gameroom
+    - client must reach current setup configuration
+
+#TODO
 
 ### Setup Phase
 

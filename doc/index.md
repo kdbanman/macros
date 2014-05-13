@@ -20,12 +20,18 @@ That game itself could be hosted on this service.
 
 # TODO
 
-- Current VSLICE TODOs are listed per file in order of priority
+- Current VSLICE TODOs are listed below per file in order of priority
 - TODOs outside the scope of VSLICE are in the files themselves
 
 ## Server and Communications
 
 ### [gameroom.md](gameroom.md)
+
+- continue minimizing gameroom responsibilities
+    - do not serve games
+        - continue at #TODO
+    - do not handle resync of disconnected users (back button)
+        - should there be a state to express, "1 or more players have disconnected," or should this just be part of the lag state?
 
 - define Comms-level room state tree
     - configing
@@ -36,13 +42,10 @@ That game itself could be hosted on this service.
         - lagging
 
 - design Comms-level packets to enable state transitions
-
-- what triggers game creation
-
-- define Player data and Command data sent to client
-    - see engine.md
-    - taken from webapp.State
-    - header for Comms, body for Engine stuff
+    - define Player data and Command data sent to client
+        - see engine.md
+        - taken from webapp.State
+        - header for Comms, body for Engine stuff
 
 - define active game data model
 
