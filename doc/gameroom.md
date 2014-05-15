@@ -9,7 +9,6 @@ Where possible, RESTful style using a stateful message patterns over WebSockets.
 Each playable gameroom can be in two parent states: `setup` or `running`.
 The first is for players to join, organize themselves, and finalize the configuration.
 The second is for the game engine to run.
-Lagging is a substate of running because lag detection during asyncronous setup state is impossible.
 
 Little (or, better, zero) engine code should be run on the server.
 Divergence/cheating detection is interface-based (ex. checksum of game state done client-side and sent to server).
@@ -55,6 +54,7 @@ The served game connects to the newly created gameroom.
     - gamestate hash divergence halts game progress
 - enforces 2 main game engine stages, setup and run
     - multi stage setup pipelines are child states of setup
+    - lagging is a child state of running because lag detection during asyncronous setup state is impossible
 - enforces engine mutation by single command packet composed of all client commands
     - view/controller is a command sender
     - engine is a command receiver
