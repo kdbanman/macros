@@ -30,7 +30,7 @@ That game itself could be hosted on this service.
 - continue minimizing gameroom responsibilities
     - do not serve games
         - continue at #TODO
-    - do not handle resynchronization of disconnected users (back button), just wait for a client to rejoin with the same state hash
+    - do not fully handle resynchronization of disconnected users (back button), just wait for a client to rejoin with the same state hash
         - should there be a state to express, "1 or more players have disconnected," or should this just be part of the lag state?
             - research websockets, find out how likely it is for a 'lagging' player to appear 'disconnected'.  also how likely it is for a 'disconnected' player to appear 'lagging'
             
@@ -45,7 +45,8 @@ That game itself could be hosted on this service.
 
 - define all possible state transitions within state tree
 
-- design Comms-level packets to enable state transitions
+- design Comms packets to enable state transitions
+    - enumerate communication sequences between client(s) and server
     - define Player data and Command data sent to client
         - see engine.md
         - taken from webapp.State
