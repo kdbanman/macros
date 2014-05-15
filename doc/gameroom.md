@@ -16,10 +16,10 @@ Divergence/cheating detection is interface-based (ex. checksum of game state don
 Command conflicts are resolved client-side.
 
 By enforcing full determinism of game state from an initial seed and a set of possible user commands, only command packets need to be shared between clients (and server).
+Only command packets sent by server may modify game state.
 
-Clients should not mutate their own game state.
 Client commands (empty or not) are gathered at the server, verified, and compiled into a master packet.
-The master packet is broadcast to each waiting client, where it is integrated into the next iteration.
+The master packet is broadcast to each waiting client, where it is integrated into the coming iteration. (See separation of communication turns in AoE article)
 
 The game engine and view/controller are responsible for implementing the commands.
 The communications module is responsible for controlling client game engine synchronization.
@@ -27,7 +27,7 @@ The communications module is responsible for controlling client game engine sync
 ## Constraints
 
 - must detect and react to client divergence of game engine state
-    - gamestate hashes generated client-side, compared server-side
+    - gamestate hashes generated client-side, compared server-side (consensus)
 - must be user-id aware
     - guest uuid if none supplied
 - must be some means for player to reconnect from disconnection or accidental back button
@@ -38,7 +38,7 @@ The communications module is responsible for controlling client game engine sync
 ## Service Model
 
 Game is constructed using the framework implementing the client side of gameroom.
-Authorized services creates a gameroom, then serves the client the game.
+Authorized service creates a gameroom, then serves the client the game.
 The served game connects to the newly created gameroom.
 
 ## Contracts
