@@ -16,7 +16,7 @@ This is (ideally) a framework in which to build a game.
 The synchronization/recording runtime is offered as a service for game providers.
 
 A game community could be hosted on a service that deals with users, social, tournaments, rankings, etc.
-That game itself could be hosted on this service.
+That game instances could be synchronized on this service.
 
 # TODO
 
