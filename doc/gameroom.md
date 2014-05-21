@@ -67,9 +67,9 @@ NOTE: This style is still possible with other models.  Here it is enforced.
 
 ### Game
 
-- enforces full determinism of engine
+    - enforces full determinism of engine
     - gamestate hash divergence halts game progress
-- enforces 2 main game engine stages, setup and run
+    - enforces 2 main game engine stages, setup and run
     - multi stage setup pipelines are child states of setup
     - lagging is a child state of running because lag detection during asyncronous setup state is impossible
 - enforces engine mutation by single command packet composed of all client commands
@@ -99,7 +99,19 @@ NOTE: This style is still possible with other models.  Here it is enforced.
 
 #TODO
 
-### Setup Phase
+**TODO iteratively change and separate what's below into state tree, state descriptions**
+
+## Gameroom States
+
+- setup
+    - not full
+    - full
+- run
+    - running
+    - lagging
+
+
+### Setup State
 
 - gameengine setup commands are received async from clients and pushed out
     - first-come-first-served semantics are fine for setup stage
@@ -108,8 +120,9 @@ NOTE: This style is still possible with other models.  Here it is enforced.
         - relatively infrequent, so redundancy and data weight is ok
     NOTE: cannot just use setup commands, need full state.  players joining after some configuration is performed would need all commands in order.  just keep setup configuration minimal.
 - server waits for all players to commit readiness
+- final state from setup phase represents the seed for running state
 
-### Running Phase
+### Running State
 
 - game begins, server now locks players to current users
     - other connections are viewers or refused
