@@ -10,9 +10,9 @@ Each playable gameroom can be in two parent states: `setup` or `running`.
 The first is for players to join, organize themselves, and finalize the configuration.
 The second is for the game engine to run.
 
-Little (or, better, zero) engine code should be run on the server.
+No engine code should be run on the server.
 Divergence/cheating detection is interface-based (ex. checksum of game state done client-side and sent to server).
-Command conflicts are resolved client-side.
+Game-specific command conflicts are resolved client-side.
 
 By enforcing full determinism of game state from an initial seed and a set of possible user commands, only command packets need to be shared between clients (and server).
 Only command packets sent by server may modify game state.
@@ -23,33 +23,50 @@ The master packet is broadcast to each waiting client, where it is integrated in
 The game engine and view/controller are responsible for implementing the commands.
 The communications module is responsible for controlling client game engine synchronization.
 
-## Constraints
+## Requirements
 
+- must handle defaultest browser configurations possible
+- must persistently record all gameroom activity
 - must detect and react to client divergence of game engine state
     - gamestate hashes generated client-side, compared server-side (consensus)
 - must be user-id aware
     - guest uuid if none supplied
 - must be some means for player to reconnect from disconnection or accidental back button
+    - must *not* be responsible for resynchronization of game state (only verification of resync success)
 - must be tolerant to poor/changing latency
 - must be tolerant of different and changing engine iteration times
 - must be tolerant to dropped command packets
+- must *not* be responsible for engine-specific command validation
 
-## Service Model
+## Service Model Comparison
+
+### Cross Domain Connection
 
 Game is constructed using the framework implementing the client side of gameroom.
 Authorized service creates a gameroom, then serves the client the game.
 The served game connects to the newly created gameroom.
 
+#### Benefits
+
+- Lightest, simplest server state
+
+### Common Host For iFrame
+
+Game is constructed using the framework implementing the client side of gameroom.
+Authorized service creates a gameroom, then serves the client a page with an iframe to contain the game.
+The iframe is served the game from my domain.
+The game makes a (same origin) connection to the gameroom.
+
+#### Benefits
+
+NOTE: This style is still possible with other models.  Here it is enforced.
+
+- Avoids cross domain complexity (simpler client and server configurations)
+
 ## Contracts
-
-### Client
-
-- client must already be served game engine
 
 ### Game
 
-- enforces game engine recognition of invalid setup
-    - server will naively try to synchronize everyone and run the engine when told
 - enforces full determinism of engine
     - gamestate hash divergence halts game progress
 - enforces 2 main game engine stages, setup and run
@@ -65,17 +82,25 @@ The served game connects to the newly created gameroom.
 
 ## Server
 
+### HTTP Gameroom Creation
+
 - authorized put/post to /create url creates gameroom
     - response is the new waiting join/<gameroom_id> url
-- client /play/<game_id> url query (over ws://) is connected to gameroom
-    - client must reach current setup configuration
+
+- authorized get from /archive/<gameroom_id> is returned .json played game log
+
+### WS Gameroom Connection
+
+- client ws:// connection to existing /play/<game_id> url is:
+    - connected to gameroom in non-full setup phase
+        - client must reach current setup configuration
+    - denied connection to gameroom in full setup or run phase
+        - diverted to live /watch/<game_id> if possible
 
 #TODO
 
 ### Setup Phase
 
-- clients join with a put/post of username (default uuid if none)
-    - new client assigned an open socket
 - gameengine setup commands are received async from clients and pushed out
     - first-come-first-served semantics are fine for setup stage
     - setup configuration is allowed before all players have joined
