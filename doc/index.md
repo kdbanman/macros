@@ -27,21 +27,14 @@ That game instances could be synchronized on this service.
 
 ### [gameroom.md](gameroom.md)
 
-- continue minimizing gameroom responsibilities
-    - do not serve games
-        - continue at #TODO
-    - do not fully handle resynchronization of disconnected users (back button), just wait for a client to rejoin with the same state hash
-        - should there be a state to express, "1 or more players have disconnected," or should this just be part of the lag state?
-            - research websockets, find out how likely it is for a 'lagging' player to appear 'disconnected'.  also how likely it is for a 'disconnected' player to appear 'lagging'
-            
+- possible vision additions:
+    - minimal responsibilities (related to communications locus, not engine runner/command validator, as well as no paused/lagging state)
 
+- research websockets, find out how likely it is for a 'lagging' player to appear 'disconnected'.  also how likely it is for a 'disconnected' player to appear 'lagging'
+            
 - define Comms-level room state tree
-    - configing
-        - full
-    - playing
-        - running
-        - paused
-        - lagging
+    - continue at #TODO, considering what's minimally possible/reasonable for number of running substates
+        - should there be a state to express, "1 or more players have disconnected," or should this just be part of the lag state?
 
 - define all possible state transitions within state tree
 
@@ -52,7 +45,7 @@ That game instances could be synchronized on this service.
         - taken from webapp.State
         - header for Comms, body for Engine stuff
 
-- define active game data model
+- define active gameroom data model
 
 ## Macros Game
 
