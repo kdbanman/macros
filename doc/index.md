@@ -27,10 +27,9 @@ That game instances could be synchronized on this service.
 
 ### [gameroom.md](gameroom.md)
 
-- possible vision additions:
-    - minimal responsibilities (related to communications locus, not engine runner/command validator, as well as no paused/lagging state)
-
-- research websockets, find out how likely it is for a 'lagging' player to appear 'disconnected'.  also how likely it is for a 'disconnected' player to appear 'lagging'
+- research websockets
+    - find minimal amount of states for a room of websocketers
+        - find out how likely it is for a 'lagging' player to appear 'disconnected'.  also how likely it is for a 'disconnected' player to appear 'lagging'
             
 - define Comms-level room state tree
     - continue at #TODO, considering what's minimally possible/reasonable for number of running substates
