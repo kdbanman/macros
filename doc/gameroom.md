@@ -4,7 +4,10 @@
 
 A multiplayer game communications engine that uses the AoE lock-step synchronization model.
 Each server gameroom instance is a "communications room" for clients playing together.
-Where possible, RESTful style using a stateful message patterns over WebSockets.
+
+The gamerooms have minimal responsibilities - they are communications/recording loci.
+They do not run any game code or validate any game commands.
+They have only a few states (those derivable from the WebSocket protocol that are relevant to multiplayer game communications).
 
 Each playable gameroom can be in two parent states: `setup` or `running`.
 The first is for players to join, organize themselves, and finalize the configuration.
@@ -122,34 +125,13 @@ NOTE: This style is still possible with other models.  Here it is enforced.
 - server waits for all players to commit readiness
 - final state from setup phase represents the seed for running state
 
-### Running State
+## Client Side Model Comparison
 
-- game begins, server now locks players to current users
-    - other connections are viewers or refused
-- client combined view and controller renders engine output and serves
-  local player commands to server
-- server waits for client command packets from all clients
-    - server validates each and combines into master command packet
-    - server applies master packet engine
-    - server iterates engine, adds resulting checksum to master packet
-    - server broadcasts master packet to each client
-    - server returns to waiting
-
-## Client Side
- 
+- pass allbacks to render(), stateMutator(command) after they are defined
+- expose command gatherer function for use within render()
 
 ## Command Packets
 
-Command packets include game engine commands as well as timing control data (latency, framerate) and gamestate checksum.
+Command packets include timing control data (latency, framerate), gamestate checksum, and a body for actual game commands.
 
-For motivation, read the AoE article.
-
-### Client Packet
-
-- generation
-- latency
-- framerate
-
-### Master Packet
-
-- iterations_per_command
+For timing control, read the AoE article.
