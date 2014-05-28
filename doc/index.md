@@ -8,7 +8,7 @@ Development model and past VSLICE phases: [meta.md](meta.md)
 
 ## Current VSLICE Phase
 
-### VSLICE_0: Game Communications Engine
+### VSLICE_0: Gameroom - Game Communications Engine
 
 Game-independent setup, synchronization, and recording locus for multiplayer game instances.
 
@@ -17,6 +17,9 @@ The synchronization/recording runtime is offered as a service for game providers
 
 A game community could be hosted on a service that deals with users, social, tournaments, rankings, etc.
 That game instances could be synchronized on this service.
+
+For this slice, the service need not scale beyond a single machine.
+A centralized controller for a cluster of Gameroom servers could be designed later.
 
 # TODO
 
@@ -27,13 +30,12 @@ That game instances could be synchronized on this service.
 
 ### [gameroom.md](gameroom.md)
 
-- research websockets
-    - find minimal amount of states for a room of websocketers
-        - find out how likely it is for a 'lagging' player to appear 'disconnected'.  also how likely it is for a 'disconnected' player to appear 'lagging'
+- research websocket libraries for state/architectural choices
+    - for einaros/ws, a single HTTP server accepting PUT to /create with many WebSocketServers listening on their own /play/<room_id>
             
-- define Comms-level room state tree
-    - continue at #TODO, considering what's minimally possible/reasonable for number of running substates
-        - should there be a state to express, "1 or more players have disconnected," or should this just be part of the lag state?
+- define Gameroom state tree    
+    - find minimal amount of states for a room of websocketers continue at #TODO
+        - find out how likely it is for a 'lagging' player to appear 'disconnected'.  also how likely it is for a 'disconnected' player to appear 'lagging'
 
 - define all possible state transitions within state tree
 
@@ -44,7 +46,6 @@ That game instances could be synchronized on this service.
         - taken from webapp.State
         - header for Comms, body for Engine stuff
 
-- define active gameroom data model
 
 ## Macros Game
 
