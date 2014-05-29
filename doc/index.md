@@ -52,8 +52,3 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 ### [game.md](game.md)
 ### [engine.md](engine.md)
 ### [setup.md](setup.md)
-
-# Prototype
-
-- /register is a single text box.  that creates a user
-- /login is a single text box.  that logs him in or fails
