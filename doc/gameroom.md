@@ -1,5 +1,12 @@
 # Game Room
 
+## Target
+
+Indie game makers with programming and framework use experience who want multiplayer from the ground up.
+All I want to have to tell them is, "google HTML5 games for beginners."
+
+Big scalers come later.
+
 ## Vision
 
 A multiplayer game communications engine that uses the AoE lock-step synchronization model.
@@ -43,6 +50,20 @@ The communications module is responsible for controlling client game engine sync
 
 ## Service Model Comparison
 
+### Upload to Me
+
+Game is constructed using the gameroom framework.
+Authorized game maker uploads to my site.
+I host and run.
+
+#### Benefits
+
+- Lowest barrier to entry by far
+
+#### Cons
+
+- Need an actual webapp to deal with all that shit
+
 ### Cross Domain Connection
 
 Game is constructed using the framework implementing the client side of gameroom.
@@ -52,6 +73,10 @@ The served game connects to the newly created gameroom.
 #### Benefits
 
 - Lightest, simplest server state
+
+#### Cons
+
+- Higher barrier to entry
 
 ### Common Host For iFrame
 
