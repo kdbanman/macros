@@ -30,6 +30,11 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 
 ### [gameroom.md](gameroom.md)
 
+- put client usecase from notebook in
+
+- try assuming that whatever join/leave async, full-state-sharing bullshit needs to be done CAN be done before gameroom is even involved
+    - confirm with logan
+
 - research websocket libraries for state/architectural choices
     - for einaros/ws, a single HTTP server accepting PUT to /create with many WebSocketServers listening on their own /play/<room_id>
             
