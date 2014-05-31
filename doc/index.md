@@ -32,6 +32,17 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 
 - put client usecase from notebook in
 
+- decide if/how maker needs access to joined/connected method
+    - join method or special event or something to tell client its ID
+    - should there be separate events for "I connected" vs "other connected"?
+
+- clients need to agree on which client is which
+    - similar addressability concerns as object creation
+    - imagine a maker is detecting clicks on soldiers.  he needs to know which player 'owns' that soldier so his UI can respond accordingly.
+        - i.e. the maker needs access to client/player IDs
+        - make doCommand(cmd, player, newID)
+        - player and newID are gameroom headery/control stuff, cmd is THE MAKERS DON'T TOUCH IT
+
 - try assuming that whatever join/leave async, full-state-sharing bullshit needs to be done CAN be done before gameroom is even involved
     - confirm with logan
 
