@@ -35,6 +35,8 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 - decide if/how maker needs access to joined/connected method
     - join method or special event or something to tell client its ID
     - should there be separate events for "I connected" vs "other connected"?
+    * in the background, invisible to maker, gameroom connects (with existing gameroom.state if in LocalStorage) and negotiates player ID
+        * in the event of two players accidentally back buttoning (2 open slots waiting for rejoin) some sort of session mechanism would be really nice for not messing with their old IDs and preventing game hijack
 
 - clients need to agree on which client is which
     - similar addressability concerns as object creation
@@ -48,6 +50,7 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 
 - research websocket libraries for state/architectural choices
     - for einaros/ws, a single HTTP server accepting PUT to /create with many WebSocketServers listening on their own /play/<room_id>
+    - for TopCloud/socketcluster ?
             
 - define Gameroom state tree    
     - find minimal amount of states for a room of websocketers continue at #TODO
