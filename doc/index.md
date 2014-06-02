@@ -50,7 +50,7 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 
 - research websocket libraries for state/architectural choices
     - for einaros/ws, a single HTTP server accepting PUT to /create with many WebSocketServers listening on their own /play/<room_id>
-    - for TopCloud/socketcluster, configure with 'websocket' transport only (based on engine.io), and ?
+    - for TopCloud/socketcluster, configure with 'websocket' transport only (based on engine.io), and ? (see nombo.io for usage and docs)
             
 - define Gameroom state tree    
     - find minimal amount of states for a room of websocketers continue at #TODO
