@@ -30,7 +30,15 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 
 ### [gameroom.md](gameroom.md)
 
-- put client usecase from notebook in
+- document gameroom.state (TODO flag)
+
+- put client usecase from notebook in, progressively enhancing from basic usage to full syntactic sugar (TODO flag)
+    - requires client command object (`cmd` here) being augmented with `onCmd` property
+    - cmd.onCmd("newBase", function(newObj) { newObj = new ...(); }
+        - ILLEGAL, FUNCTION SCOPE NO EFFECT ON gameroom.state
+    - cmd.onCmd("newBase", function() { var newObj = new ..(); ... return newObj;}
+        - requires `onCmd` return to be evaluated:
+            - if (clientCommand.onCmd && typeof clientCommand === 'function') newThing = clientCommand.onCmd(); if (typeof newThing !== 'undefined') gameroom.state[newStateID] = newThing;
 
 - decide if/how maker needs access to joined/connected method
     - join method or special event or something to tell client its ID

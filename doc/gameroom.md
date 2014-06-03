@@ -48,6 +48,53 @@ The communications module is responsible for controlling client game engine sync
 - must be tolerant to dropped command packets
 - must *not* be responsible for engine-specific command validation
 
+## Client-Side API
+
+Programmer using the API is referred to as "maker," short for game maker.
+
+```
+gameroom.loop = function myLoop() { ... }
+```
+
+- `myLoop` is a maker-defined function called by gameroom's sync controller.
+- Game state must not be mutated/augmented within this function.
+- Intended mainly for drawing and interpreting UI.
+
+```
+gameroom.schedule(myCommand)
+```
+
+- `myCommand` is a maker-defined command object that will be received by `doCommand` after being collected and sent to the server for broadcast.
+- These commands are meant to effect game state mutation/augmentation *after* myCommand is applied within doCommand.
+
+```
+gameroom.myPlayerID = gameroom.me
+```
+
+- Player/client ID for each client of the gameroom associated with the `player` parameter of the `doCommand` function.
+- **Must** not be modified ever.
+
+```
+gameroom.state
+```
+
+TODO
+
+```
+gameroom.doCommand = function myDoCommand(myCommand, player, newStateID) { ... }
+```
+
+- `myDoCommand` is a maker-defined function called by gameroom's sync controller.
+- `myCommand` is a command object exactly as passed to `schedule`.
+- `player` is the player ID of the client who scheduled and sent the command.
+- `newStateID` is a new ID sent unique to each command that is the same on each client, intended to become the dereferencing address of a possible new game object.
+- Game state should affected by these commands, as they will be recieved in the same order on each client.
+
+Progressive Enhancement from basic to full syntactic sugar: TODO
+
+```
+```
+
 ## Service Model Comparison
 
 ### Upload to Me
