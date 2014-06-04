@@ -14,38 +14,41 @@ Each server gameroom instance is a "communications room" for clients playing tog
 
 The gamerooms have minimal responsibilities - they are communications/recording loci.
 They do not run any game code or validate any game commands.
-They have only a few states (those derivable from the WebSocket protocol that are relevant to multiplayer game communications).
+They are of fewest possible states (those derivable from the WebSocket protocol that are relevant to multiplayer game communications).
 
-Each playable gameroom can be in two parent states: `setup` or `running`.
-The first is for players to join, organize themselves, and finalize the configuration.
-The second is for the game engine to run.
-
-No engine code should be run on the server.
-Divergence/cheating detection is interface-based (ex. checksum of game state done client-side and sent to server).
-Game-specific command conflicts are resolved client-side.
+Any asynchronous 'setup' phase for different players to join and leave is to be handled BEFORE connecting to a game room.
+Once the number of connected clients is equal to the number of expected players, the game room lock-step cycle begins.
 
 By enforcing full determinism of game state from an initial seed and a set of possible user commands, only command packets need to be shared between clients (and server).
 Only command packets sent by server may modify game state.
 
-Client commands (empty or not) are gathered at the server, verified, and compiled into a master packet.
+No engine code should be run on the server.
+Divergence/cheating detection is interface-based (ex. checksum of game state done client-side and sent to server as part of packet header).
+Game-specific command conflicts are resolved client-side.
+
+Client commands (empty or not) are gathered at the server, processed, and compiled into a master packet.
 The master packet is broadcast to each waiting client, where it is integrated into the coming iteration. (See separation of communication turns in AoE article)
 
 The game engine and view/controller are responsible for implementing the commands.
-The communications module is responsible for controlling client game engine synchronization.
+The communications module is responsible for controlling client game state synchronization and frame draw calls.
 
 ## Requirements
 
 - must handle defaultest browser configurations possible
 - must persistently record all gameroom activity
+    - error states and traces are very important (ex. state divergence)
+        - on disconnect or exception, dump as much as possible to server
 - must detect and react to client divergence of game engine state
     - gamestate hashes generated client-side, compared server-side (consensus)
 - must be user-id aware
     - guest uuid if none supplied
+    - XXX part of optional configuration for richer recorded data?
 - must be some means for player to reconnect from disconnection or accidental back button
     - must *not* be responsible for resynchronization of game state (only verification of resync success)
 - must be tolerant to poor/changing latency
 - must be tolerant of different and changing engine iteration times
 - must be tolerant to dropped command packets
+    - XXX TCP + WebSocket + [websocket library] may handle this?
 - must *not* be responsible for engine-specific command validation
 
 ## Client-Side API
@@ -73,6 +76,8 @@ gameroom.myPlayerID = gameroom.me
 
 - Player/client ID for each client of the gameroom associated with the `player` parameter of the `doCommand` function.
 - **Must** not be modified ever.
+    - XXX might be better closure protected and exposed by getter?
+    - XXX maximize protection by having the server append player ids to packets?
 
 ```
 gameroom.state
@@ -90,9 +95,8 @@ gameroom.doCommand = function myDoCommand(myCommand, player, newStateID) { ... }
 - `newStateID` is a new ID sent unique to each command that is the same on each client, intended to become the dereferencing address of a possible new game object.
 - Game state should affected by these commands, as they will be recieved in the same order on each client.
 
-Progressive Enhancement from basic to full syntactic sugar: TODO
-
 ```
+Progressive Enhancement from basic to full syntactic sugar: TODO
 ```
 
 ## Service Model Comparison
@@ -143,17 +147,13 @@ NOTE: This style is still possible with other models.  Here it is enforced.
 ### Game
 
     - enforces full determinism of engine
-    - gamestate hash divergence halts game progress
-    - enforces 2 main game engine stages, setup and run
-    - multi stage setup pipelines are child states of setup
-    - lagging is a child state of running because lag detection during asyncronous setup state is impossible
-- enforces engine mutation by single command packet composed of all client commands
-    - view/controller is a command sender
-    - engine is a command receiver
-        - command receipt enforces full state iteration
+    - gamestate hash divergence halts normal lock-step cycle
+        - XXX possible resync attempt use case may restart lock-step?
+    - players joining/leaving (with possible async setup pipelines) must be handled before game room connection
+- enforces game state mutation by only by command packets
+    - view/controller is a command sender, client gameroom is a command receiver
     - command conflict resolution must be performed client-side
-- enforces header data model of comms-related player/game data sent to and from clients
-    - (unenforced) engine specific data is the packet body
+- enforces player reference and object creation/reference by gameroom supplied ids
 
 ## Server
 
@@ -167,43 +167,56 @@ NOTE: This style is still possible with other models.  Here it is enforced.
 ### WS Gameroom Connection
 
 - client ws:// connection to existing /play/<game_id> url is:
-    - connected to gameroom in non-full setup phase
-        - client must reach current setup configuration
-    - denied connection to gameroom in full setup or run phase
-        - diverted to live /watch/<game_id> if possible
-
-#TODO
-
-**TODO iteratively change and separate what's below into state tree, state descriptions**
+    - connected to gameroom if non-full
+        - client must agree with game state hash
+    - denied connection to gameroom if running (full -> running) or if game state hash does not agree
+        - XXX or if client session does not match a current disconnect slot?
 
 ## Gameroom States
 
-- setup
-    - not full
-    - full
-- run
+- waiting
+- started
     - running
+        - TODO: substates based on receipt, process, broadcast cycle
     - lagging
+    - vacancy
 
 
-### Setup State
+### Waiting
 
-- gameengine setup commands are received async from clients and pushed out
-    - first-come-first-served semantics are fine for setup stage
-    - setup configuration is allowed before all players have joined
-    - full configuration state is sent and broadcast with every change
-        - relatively infrequent, so redundancy and data weight is ok
-    NOTE: cannot just use setup commands, need full state.  players joining after some configuration is performed would need all commands in order.  just keep setup configuration minimal.
-- server waits for all players to commit readiness
-- final state from setup phase represents the seed for running state
+- not full - number of expected players does not equal number of connected players
+- server waiting for all (state-agreeing) players to commit readiness by connecting
 
-## Client Side Model Comparison
+### Started
 
-- pass allbacks to render(), stateMutator(command) after they are defined
-- expose command gatherer function for use within render()
+- set of connected players equal reaches expected number
+- sessions locked - different players may not join in the event of a disconnect
+    - XXX hard to imagine how a fresh player could get current game state to join after a disconnect, but maybe this isn't a necessary thing?
+
+#### Running
+
+- lock-step sync, expected behaviour
+
+TODO: substates based on receipt, process, broadcast cycle
+
+#### Lagging
+
+- certain threshold since command receipt from 1+ players
+
+#### Vacancy
+
+- 1+ players disconnected
 
 ## Command Packets
 
+### From Client
+
 Command packets include timing control data (latency, framerate), gamestate checksum, and a body for actual game commands.
 
-For timing control, read the AoE article.
+TODO: JSON model
+
+### From Server
+
+Server packets include a commandID (newStateID), player ID, processed timing control data, and the game command body.
+
+TODO: JSON model
