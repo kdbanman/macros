@@ -23,14 +23,14 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 
 # TODO
 
-- Current VSLICE TODOs are listed below per file in order of priority
+- Current major VSLICE TODOs are listed below per file in order of priority
+- Current minor VSLICE TODOs are in the files themselves with TODO markers
+    - Per-TODO notes are below to keep the other documents clean
 - TODOs outside the scope of VSLICE are in the files themselves
 
 ## Server and Communications
 
 ### [gameroom.md](gameroom.md)
-
-- document gameroom.state (TODO flag)
 
 - put client usecase from notebook in, progressively enhancing from basic usage to full syntactic sugar (TODO flag)
     - requires client command object (`cmd` here) being augmented with `onCmd` property
@@ -53,17 +53,10 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
         - make doCommand(cmd, player, newID)
         - player and newID are gameroom headery/control stuff, cmd is THE MAKERS DON'T TOUCH IT
 
-- try assuming that whatever join/leave async, full-state-sharing bullshit needs to be done CAN be done before gameroom is even involved
-    - confirm with logan
-
 - research websocket libraries for state/architectural choices
     - for einaros/ws, a single HTTP server accepting PUT to /create with many WebSocketServers listening on their own /play/<room_id>
     - for TopCloud/socketcluster, configure with 'websocket' transport only (based on engine.io), and ? (see nombo.io for usage and docs)
             
-- define Gameroom state tree    
-    - find minimal amount of states for a room of websocketers continue at #TODO
-        - find out how likely it is for a 'lagging' player to appear 'disconnected'.  also how likely it is for a 'disconnected' player to appear 'lagging'
-
 - define all possible state transitions within state tree
 
 - design Comms packets to enable state transitions
