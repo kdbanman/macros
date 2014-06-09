@@ -80,10 +80,12 @@ gameroom.myPlayerID = gameroom.me
     - XXX maximize protection by having the server append player ids to packets?
 
 ```
-gameroom.state
+gameroom.state = { property: myStateObject, property2: ... }
 ```
 
-TODO
+- `property` and `myStateObject` together form a key-value pair of game state.
+- Each client must agree about what object is dereferenced by any given `property` key.
+- Syntax sugar in `doCommand` serves as an interface to game state object creation
 
 ```
 gameroom.doCommand = function myDoCommand(myCommand, player, newStateID) { ... }
@@ -93,7 +95,7 @@ gameroom.doCommand = function myDoCommand(myCommand, player, newStateID) { ... }
 - `myCommand` is a command object exactly as passed to `schedule`.
 - `player` is the player ID of the client who scheduled and sent the command.
 - `newStateID` is a new ID sent unique to each command that is the same on each client, intended to become the dereferencing address of a possible new game object.
-- Game state should affected by these commands, as they will be recieved in the same order on each client.
+- Game state should be affected by these commands, as they will be recieved in the same order on each client.
 
 ```
 Progressive Enhancement from basic to full syntactic sugar: TODO
@@ -107,11 +109,11 @@ Game is constructed using the gameroom framework.
 Authorized game maker uploads to my site.
 I host and run.
 
-#### Benefits
+Benefits
 
 - Lowest barrier to entry by far
 
-#### Cons
+Cons
 
 - Need an actual webapp to deal with all that shit
 
@@ -121,11 +123,11 @@ Game is constructed using the framework implementing the client side of gameroom
 Authorized service creates a gameroom, then serves the client the game.
 The served game connects to the newly created gameroom.
 
-#### Benefits
+Benefits
 
 - Lightest, simplest server state
 
-#### Cons
+Cons
 
 - Higher barrier to entry
 
@@ -136,7 +138,7 @@ Authorized service creates a gameroom, then serves the client a page with an ifr
 The iframe is served the game from my domain.
 The game makes a (same origin) connection to the gameroom.
 
-#### Benefits
+Benefits
 
 NOTE: This style is still possible with other models.  Here it is enforced.
 
@@ -193,17 +195,17 @@ NOTE: This style is still possible with other models.  Here it is enforced.
 - sessions locked - different players may not join in the event of a disconnect
     - XXX hard to imagine how a fresh player could get current game state to join after a disconnect, but maybe this isn't a necessary thing?
 
-#### Running
+Running
 
 - lock-step sync, expected behaviour
 
 TODO: substates based on receipt, process, broadcast cycle
 
-#### Lagging
+Lagging
 
 - certain threshold since command receipt from 1+ players
 
-#### Vacancy
+Vacancy
 
 - 1+ players disconnected
 
