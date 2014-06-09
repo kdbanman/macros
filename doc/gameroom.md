@@ -12,9 +12,9 @@ Big scalers come later.
 A multiplayer game communications engine that uses the AoE lock-step synchronization model.
 Each server gameroom instance is a "communications room" for clients playing together.
 
-The gamerooms have minimal responsibilities - they are communications/recording loci.
+The server-side gamerooms have minimal responsibilities - they are communications/recording loci.
 They do not run any game code or validate any game commands.
-They are of fewest possible states (those derivable from the WebSocket protocol that are relevant to multiplayer game communications).
+They are of fewest possible states (those derivable from the communications library protocol that are relevant to multiplayer game communications).
 
 Any asynchronous 'setup' phase for different players to join and leave is to be handled BEFORE connecting to a game room.
 Once the number of connected clients is equal to the number of expected players, the game room lock-step cycle begins.
@@ -30,7 +30,7 @@ Client commands (empty or not) are gathered at the server, processed, and compil
 The master packet is broadcast to each waiting client, where it is integrated into the coming iteration. (See separation of communication turns in AoE article)
 
 The game engine and view/controller are responsible for implementing the commands.
-The communications module is responsible for controlling client game state synchronization and frame draw calls.
+The client-side gameroom module is responsible for controlling client game state synchronization and frame draw calls.
 
 ## Requirements
 
@@ -48,7 +48,7 @@ The communications module is responsible for controlling client game state synch
 - must be tolerant to poor/changing latency
 - must be tolerant of different and changing engine iteration times
 - must be tolerant to dropped command packets
-    - XXX TCP + WebSocket + [websocket library] may handle this?
+    - XXX TCP + WebSocket or communications library may handle this?
 - must *not* be responsible for engine-specific command validation
 
 ## Client-Side API
