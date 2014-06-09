@@ -146,10 +146,10 @@ NOTE: This style is still possible with other models.  Here it is enforced.
 
 ### Game
 
-    - enforces full determinism of engine
-    - gamestate hash divergence halts normal lock-step cycle
-        - XXX possible resync attempt use case may restart lock-step?
-    - players joining/leaving (with possible async setup pipelines) must be handled before game room connection
+- enforces full determinism of engine
+- gamestate hash divergence halts normal lock-step cycle
+    - XXX possible resync attempt use case may restart lock-step?
+- players joining/leaving (with possible async setup pipelines) must be handled before game room connection
 - enforces game state mutation by only by command packets
     - view/controller is a command sender, client gameroom is a command receiver
     - command conflict resolution must be performed client-side
