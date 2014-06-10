@@ -103,7 +103,7 @@ Object creation across multiple clients is a problem!
 It means each client needs to add to the game state, and they all need to agree about how to talk about that new addition.
 This is called addressability, and you're welcome to use your own addressing system in the `game.state` object, but remember to avoid this:
 
-> Client 1: Create a soldier at base 5548, please! 
+> Client 1: Create a soldier at base 5548, please!  
 > Client 2: K! 
 >     Client 2 dereferences object 5548, finds a cow instead of a base, vomits up a stacktrace and crashes. 
 >     No one is having fun anymore. 
