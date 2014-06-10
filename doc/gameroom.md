@@ -105,8 +105,10 @@ This is called addressability, and you're welcome to use your own addressing sys
 
 > Client 1: Create a soldier at base 5548, please!  
 > Client 2: K!  
->     Client 2 dereferences object 5548, finds a cow instead of a base, vomits up a stacktrace and crashes.  
->     No one is having fun anymore.  
+> *Client 2 dereferences object 5548*  
+> *Client 2 finds a cow instead of a base*  
+> *Client 2 vomits up a stacktrace and crashes.*  
+> *No one is having fun anymore.*
 
 Here we show an example of the relationship between `loop()`, `schedule()`, and `doCommand()` as they create and use an object (a base) to create yet another object (a soldier).
 A tiny part of an RTS `loop()` is shown, and three different versions of `doCommand()` are shown to show you what's going on under the hood.
