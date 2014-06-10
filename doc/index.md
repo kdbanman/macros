@@ -32,11 +32,9 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 
 ### [gameroom.md](gameroom.md)
 
-- move api docs to own directory
-    - include client and server stuff as it comes, per module
-    - put reverse proxy on port 80, kirbybanman for private, gameruum for api docs and simplified vision, with link to development documentation, kirbybanman:3000 for development notes
+- split command docs off into command/doc.md
 
-- write command.js command module, exposing new Command() and augmentation methods
+- write command/command.js command module, exposing new Command() and augmentation methods
     - requires client command object (`cmd` here) being augmented with `onCmd` property
     - cmd.onCmd("newBase", function(newObj) { newObj = new ...(); }
         - ILLEGAL, FUNCTION SCOPE NO EFFECT ON gameroom.state
@@ -44,18 +42,21 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
         - requires `onCmd` return to be evaluated:
             - if (clientCommand.onCmd && typeof clientCommand === 'function') newThing = clientCommand.onCmd(); if (typeof newThing !== 'undefined') gameroom.state[newStateID] = newThing;
 
+- research websocket libraries for state/architectural choices
+    - for einaros/ws, a single HTTP server accepting PUT to /create with many WebSocketServers listening on their own /play/<room_id>
+    - for socket.io, same as above, but using socket.io's room mechanism
+    - for engine.io i'll likely be reimplementing socket.io rooms and events in a less maintainable way
+ 
+- write skeletal express/koa server that listens on /create (for future room creation) and has socket.io listening to /play/<room_id>
+
 - decide if/how maker needs access to joined/connected method
     - join method or special event or something to tell client its ID
     - should there be separate events for "I connected" vs "other connected"?
     * in the background, invisible to maker, gameroom connects (with existing gameroom.state if in LocalStorage) and negotiates player ID
         * in the event of two players accidentally back buttoning (2 open slots waiting for rejoin) some sort of session mechanism would be really nice for not messing with their old IDs and preventing game hijack
+           
+- put reverse proxy on port 80, kirbybanman for private, gameruum for doc/
 
-- research websocket libraries for state/architectural choices
-    - for einaros/ws, a single HTTP server accepting PUT to /create with many WebSocketServers listening on their own /play/<room_id>
-    - for engine.io ?
-    - for socket.io ?
-    - for TopCloud/socketcluster, configure with 'websocket' transport only (based on engine.io), and ? (see nombo.io for usage and docs)
-            
 - define all possible state transitions within state tree
 
 - design Comms packets to enable state transitions
