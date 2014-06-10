@@ -2,21 +2,20 @@
 
 ## Target
 
-Indie game makers with programming and framework use experience who want multiplayer from the ground up.
-All I want to have to tell them is, "google HTML5 games for beginners."
-
-Big scalers come later.
+Indie game makers with programming and framework experience who want multiplayer from the ground up.
+Google "HTML5 games for beginners" and keep in mind the [API documentation](gameroom/client.md).
 
 ## Vision
 
-A multiplayer game communications engine that uses the AoE lock-step synchronization model.
-Each server gameroom instance is a "communications room" for clients playing together.
+A multiplayer game communications engine that uses the lock-step, command-based synchronization model.
+Each server gameroom instance is a "communications room" for 2 or more gameroom clients playing together in sync.
 
-The server-side gamerooms have minimal responsibilities - they are communications/recording loci.
+The server-side gamerooms have minimal responsibilities - they are synchronization/recording loci.
 They do not run any game code or validate any game commands.
-They are of fewest possible states (those derivable from the communications library protocol that are relevant to multiplayer game communications).
+They have the fewest possible states (those derivable from the communications library protocol that are relevant to multiplayer game synchronization).
 
-Any asynchronous 'setup' phase for different players to join and leave is to be handled BEFORE connecting to a game room.
+Any asynchronous 'setup' phase for different players to join and leave is to be handled BEFORE connecting to a gameroom.
+The gamestate hash of the first connected client decides what the other clients must agree with in order to connect.
 Once the number of connected clients is equal to the number of expected players, the game room lock-step cycle begins.
 
 By enforcing full determinism of game state from an initial seed and a set of possible user commands, only command packets need to be shared between clients (and server).
