@@ -76,7 +76,7 @@ gameroom.myPlayerID = gameroom.me
 
 - Player/client ID for each client of the gameroom associated with the `player` parameter of the `doCommand` function.
 - **Must** not be modified ever.
-    - XXX might be better closure protected and exposed by getter?
+    - XXX might be better closure protected exposed as getter?
     - XXX maximize protection by having the server append player ids to packets?
 
 ```
@@ -85,7 +85,7 @@ gameroom.state = { property: myStateObject, property2: ... }
 
 - `property` and `myStateObject` together form a key-value pair of game state.
 - Each client must agree about what object is dereferenced by any given `property` key.
-- Syntax sugar in `doCommand` serves as an interface to game state object creation
+- Syntax sugar in `doCommand()` serves as an interface to game state object creation
 
 ```
 gameroom.doCommand = function myDoCommand(myCommand, player, newStateID) { ... }
@@ -103,10 +103,10 @@ Object creation across multiple clients is a problem!
 It means each client needs to add to the game state, and they all need to agree about how to talk about that new addition.
 This is called addressability, and you're welcome to use your own addressing system in the `game.state` object, but remember to avoid this:
 
-> Client 1: Create a soldier at base 5548, please!
-> Client 2: K!
->     Client 2 dereferences object 5548, finds a cow instead of a base, vomits up a stacktrace and crashes.
->     No one is having fun anymore.
+> Client 1: Create a soldier at base 5548, please! 
+> Client 2: K! 
+>     Client 2 dereferences object 5548, finds a cow instead of a base, vomits up a stacktrace and crashes. 
+>     No one is having fun anymore. 
 
 Here we show an example of the relationship between `loop()`, `schedule()`, and `doCommand()` as they create and use an object (a base) to create yet another object (a soldier).
 A tiny part of an RTS `loop()` is shown, and three different versions of `doCommand()` are shown to show you what's going on under the hood.
