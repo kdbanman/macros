@@ -32,7 +32,11 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 
 ### [gameroom.md](gameroom.md)
 
-- put client usecase from notebook in, progressively enhancing from basic usage to full syntactic sugar (TODO flag)
+- move api docs to own directory
+    - include client and server stuff as it comes, per module
+    - put reverse proxy on port 80, kirbybanman for private, gameruum for api docs and simplified vision, with link to development documentation, kirbybanman:3000 for development notes
+
+- write command.js command module, exposing new Command() and augmentation methods
     - requires client command object (`cmd` here) being augmented with `onCmd` property
     - cmd.onCmd("newBase", function(newObj) { newObj = new ...(); }
         - ILLEGAL, FUNCTION SCOPE NO EFFECT ON gameroom.state
@@ -46,15 +50,10 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
     * in the background, invisible to maker, gameroom connects (with existing gameroom.state if in LocalStorage) and negotiates player ID
         * in the event of two players accidentally back buttoning (2 open slots waiting for rejoin) some sort of session mechanism would be really nice for not messing with their old IDs and preventing game hijack
 
-- clients need to agree on which client is which
-    - similar addressability concerns as object creation
-    - imagine a maker is detecting clicks on soldiers.  he needs to know which player 'owns' that soldier so his UI can respond accordingly.
-        - i.e. the maker needs access to client/player IDs
-        - make doCommand(cmd, player, newID)
-        - player and newID are gameroom headery/control stuff, cmd is THE MAKERS DON'T TOUCH IT
-
 - research websocket libraries for state/architectural choices
     - for einaros/ws, a single HTTP server accepting PUT to /create with many WebSocketServers listening on their own /play/<room_id>
+    - for engine.io ?
+    - for socket.io ?
     - for TopCloud/socketcluster, configure with 'websocket' transport only (based on engine.io), and ? (see nombo.io for usage and docs)
             
 - define all possible state transitions within state tree
