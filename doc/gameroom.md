@@ -97,8 +97,70 @@ gameroom.doCommand = function myDoCommand(myCommand, player, newStateID) { ... }
 - `newStateID` is a new ID sent unique to each command that is the same on each client, intended to become the dereferencing address of a possible new game object.
 - Game state should be affected by these commands, as they will be recieved in the same order on each client.
 
+# Object creation TODO move to client-doc.md
+
+Object creation across multiple clients is a problem!
+It means each client needs to add to the game state, and they all need to agree about how to talk about that new addition.
+This is called addressability, and you're welcome to use your own addressing system in the `game.state` object, but remember to avoid this:
+
+> Client 1: Create a soldier at base 5548, please!
+> Client 2: K!
+>     Client 2 dereferences object 5548, finds a cow instead of a base, vomits up a stacktrace and crashes.
+>     No one is having fun anymore.
+
+Here we show an example of the relationship between `loop()`, `schedule()`, and `doCommand()` as they create and use an object (a base) to create yet another object (a soldier).
+A tiny part of an RTS `loop()` is shown, and three different versions of `doCommand()` are shown to show you what's going on under the hood.
+The three versions have the *exact same behaviour*:
+
 ```
-Progressive Enhancement from basic to full syntactic sugar: TODO
+gameroom.loop = function ()
+{
+  // somewhere in loop(), we ask if the player has requested to build a base:
+  if ( <player dragged and dropped a barracks sprite on to map> )
+  {
+    var newBaseCmd = {command: "newBase",
+                      x: mouse.x,
+                      y: mouse.y,
+                     };
+
+    gameroom.schedule(newBaseCmd);
+  }
+
+  // elsewhere in loop(), we ask if the player has requested to make a soldier
+  if ( <player selected a base and clicked new soldier button> )
+  {
+    var newSoldierCmd = {command: "newSoldier",
+                         x: selectedBase.x + 5,
+                         y: selectedBase.y + 5
+                        };
+
+    gameroom.schedule(newSoldierCmd);
+  }
+}
+```
+
+Lowest-level `doCommand()` implementation:
+
+```
+gameroom.doCommand = function (cmd, player, newStateID) {
+  TODO
+}
+```
+
+Upgraded `doCommand()` implementation:
+
+```
+gameroom.doCommand = function (cmd, player, newStateID) {
+  TODO
+}
+```
+
+Shiny `doCommand()` implementation:
+
+```
+gameroom.doCommand = function (cmd, player, newStateID) {
+  TODO
+}
 ```
 
 ## Service Model Comparison
