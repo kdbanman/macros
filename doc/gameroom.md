@@ -46,8 +46,7 @@ The client-side gameroom module is responsible for controlling client game state
     - must *not* be responsible for resynchronization of game state (only verification of resync success)
 - must be tolerant to poor/changing latency
 - must be tolerant of different and changing engine iteration times
-- must be tolerant to dropped command packets
-    - XXX TCP + WebSocket or communications library may handle this?
+- must be tolerant to dropped command packets (see [Two Generals' Problem](http://en.wikipedia.org/wiki/Two_Generals%27_Problem))
 - must *not* be responsible for engine-specific command validation
 
 ## Service Model Comparison
@@ -118,8 +117,7 @@ NOTE: This style is still possible with other models.  Here it is enforced.
 ### WS Gameroom Connection
 
 - client ws:// connection to existing /play/<game_id> url is:
-    - connected to gameroom if non-full
-        - client must agree with game state hash
+    - connected to gameroom if non-full and hash agreement and turn number agreement
     - denied connection to gameroom if running (full -> running) or if game state hash does not agree
         - XXX or if client session does not match a current disconnect slot?
 
@@ -129,7 +127,6 @@ NOTE: This style is still possible with other models.  Here it is enforced.
 - started
     - running
         - TODO: substates based on receipt, process, broadcast cycle
-    - lagging
     - vacancy
 
 
