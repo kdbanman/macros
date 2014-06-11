@@ -43,9 +43,19 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
             - if (clientCommand.onCmd && typeof clientCommand === 'function') newThing = clientCommand.onCmd(); if (typeof newThing !== 'undefined') gameroom.state[newStateID] = newThing;
 
 - research websocket libraries for state/architectural choices
-    - for einaros/ws, a single HTTP server accepting PUT to /create with many WebSocketServers listening on their own /play/<room_id>
-    - for socket.io, same as above, but using socket.io's room mechanism
+    - for socket.io, a single HTTP server accepting PUT to /create for room creation in the `adapter`'s database
+        - room mechanics are controlled by `adapter` module, so I'll write/customize one for cassandra or something
+            - join full -> error
+            - join nonexistent -> error
+        - all gamerooms are under the default `Namespace`
+            - Namespaces are for multiplexing multiple Sockets (of different Namespaces) across a single transport (engine.io Client)
+            - might be useful to have a dumb `/chat` channel that doesn't care about lag state or syncronization for each gameroom using namespaces
+        - `io.use(function(socket, next)) middleware useful for room assignment and other handshake steps
+            - XXX room assignment maybe, but handshakey stuff might need to be after the 'connection' event.  what's the difference between the two?
     - for engine.io i'll likely be reimplementing socket.io rooms and events in a less maintainable way
+    - for einaros/ws, a single HTTP server accepting PUT to /create with many WebSocketServers listening on their own /play/<room_id>
+        - a whole server per room may be pretty wasteful
+        - just like engine.io, i'll likely be reimplementing rooms and events
  
 - write skeletal express/koa server that listens on /create (for future room creation) and has socket.io listening to /play/<room_id>
 
