@@ -32,9 +32,12 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 
 ### [gameroom.md](gameroom.md)
 
-- split command docs off into command/doc.md
+- reorganize gameroom.md, contracts after requirements
+    - split off arch notes to gameroom.md after WS gameroom connection
 
-- write command/command.js command module, exposing new Command() and augmentation methods
+- command notes to client/command.js
+
+- write client/command.js command module, exposing `new Command()` and augmentation methods
     - requires client command object (`cmd` here) being augmented with `onCmd` property
     - cmd.onCmd("newBase", function(newObj) { newObj = new ...(); }
         - ILLEGAL, FUNCTION SCOPE NO EFFECT ON gameroom.state
