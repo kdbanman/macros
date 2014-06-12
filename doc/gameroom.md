@@ -123,12 +123,30 @@ NOTE: This style is still possible with other models.  Here it is enforced.
 
 ## Gameroom States
 
+Each room tracks current state and logs previous states.
+State of each turn determines server packet broadcast to gameroom members.
+Unless a client is misbehaving (iterating before receipt), only commands for a single command turn will arrive for the room.
+
+Raw state:
+
+- turn number
+    - number of players (expected)
+    - socket id 1
+        - previous arrival lag/lead
+        - latency
+        - framerate
+        - gamestate hash
+        - command body
+    - socket id 2, 3, ...
+        - <same as sid 1>
+
+Derived state:
+
 - waiting
 - started
     - running
         - TODO: substates based on receipt, process, broadcast cycle
     - vacancy
-
 
 ### Waiting
 
