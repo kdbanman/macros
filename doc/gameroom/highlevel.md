@@ -65,13 +65,12 @@ The client-side gameroom module is responsible for controlling client game state
 The server must have an HTTP API for gameroom management:
 
 - authorized put/post to /create url creates gameroom
-    - response is the new waiting join/<gameroom_id> url
-
-- authorized get from /archive/<gameroom_id> is returned .json played game log
+    - response is the new waiting join/<lt;gameroom_id> url
+- authorized get from /archive/<lt;gameroom_id> is returned .json played game log
 
 The server must have realtime connection acceptance/denial logic per gameroom:
 
-- client realtime connection to existing /play/<game_id> url is:
+- client realtime connection to /play/<lt;game_id> url is:
     - connected to gameroom if
         - gameroom is not full
         - gamestate hash agreement 
