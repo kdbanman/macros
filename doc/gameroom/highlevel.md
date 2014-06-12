@@ -72,6 +72,7 @@ The server must have realtime connection acceptance/denial logic per gameroom:
 
 - client realtime connection to /play/&lt;game_id&gt; url is:
     - connected to gameroom if
+        - gameroom exists
         - gameroom is not full
         - gamestate hash agreement 
         - turn number agreement
