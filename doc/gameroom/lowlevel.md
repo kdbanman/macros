@@ -90,6 +90,8 @@ TODO: JSON model
 
 ## Service Model Comparison
 
+Here various ideas for exposing the gameroom server as a public service are explored.
+
 ### Upload to Me
 
 Game is constructed using the gameroom framework.
@@ -127,6 +129,4 @@ The game makes a (same origin) connection to the gameroom.
 
 Benefits
 
-NOTE: This style is still possible with other models.  Here it is enforced.
-
-- Avoids cross domain complexity (simpler client and server configurations)
+- Avoids cross domain complexity, I think (simpler client and server configurations)
