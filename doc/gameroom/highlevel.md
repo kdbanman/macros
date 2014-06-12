@@ -49,31 +49,32 @@ The client-side gameroom module is responsible for controlling client game state
 - must be tolerant to dropped command packets (see [Two Generals' Problem](http://en.wikipedia.org/wiki/Two_Generals%27_Problem))
 - must *not* be responsible for engine-specific command validation
 
-## Contracts
-
-### Game
+## Contracts for Game
 
 - enforces full determinism of engine
 - gamestate hash divergence halts normal lock-step cycle
     - XXX possible resync attempt use case may restart lock-step?
 - players joining/leaving (with possible async setup pipelines) must be handled before game room connection
 - enforces game state mutation by only by command packets
-    - view/controller is a command sender, client gameroom is a command receiver
+    - view/controller is a command sender, client gameroom is a command receiver and applier
     - command conflict resolution must be performed client-side
 - enforces player reference and object creation/reference by gameroom supplied ids
 
 ## Server
 
-### HTTP Gameroom Creation
+The server must have an HTTP API for gameroom management:
 
 - authorized put/post to /create url creates gameroom
     - response is the new waiting join/<gameroom_id> url
 
 - authorized get from /archive/<gameroom_id> is returned .json played game log
 
-### WS Gameroom Connection
+The server must have realtime connection acceptance/denial logic per gameroom:
 
-- client ws:// connection to existing /play/<game_id> url is:
-    - connected to gameroom if non-full and hash agreement and turn number agreement
-    - denied connection to gameroom if running (full -> running) or if game state hash does not agree
-        - XXX or if client session does not match a current disconnect slot?
+- client realtime connection to existing /play/<game_id> url is:
+    - connected to gameroom if
+        - gameroom is not full
+        - gamestate hash agreement 
+        - turn number agreement
+    - denied otherwise
+    - XXX do we need *re*connection semantics? if client session does not match a current disconnect slot?
