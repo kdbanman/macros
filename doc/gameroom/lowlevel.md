@@ -54,9 +54,22 @@ Vacancy
 
 ## Command Packets
 
+Packets live the following life, provided there are no error/exception flows:
+
+1. Packets are prepared at each client with a body of game-specific commands and a gameroom header, then sent to the server.
+2. When the server receives a client packet, it is stored and identified by `gameroom ID`, `command turn number`, and `client ID`.
+3. When the server receives the last client packet of a command turn, all packets for that command turn are retrieved for processing.
+    1. Their headers are analyzed for time and state synchronization, which is used to author a server packet header.
+    2. Their bodies are composed into a server packet body of game commands, sorted by elapsed time and identified by `client ID`.
+    3. The server packet is formed from the header and body, then broadcast to each client in the gameroom.
+4. When a client receives a server packet, it is split into header and body.
+    1. The header is used to control timing verify state agreement.
+    2. The body is split into individual game commands and queued for execution.
+
 ### From Client
 
-Command packets include timing control data (latency, framerate), gamestate checksum, and a body for actual game commands.
+Command packets include a header with timing control data (latency, framerate), gamestate checksum, and a body for actual game commands.
+Each game command within the body includes the time elapsed from the previous threshold for ordering.
 
 TODO: JSON model
 
@@ -75,18 +88,18 @@ TODO: JSON model
 ## Transport Libraries
 
 - for socket.io, a single HTTP server accepting PUT to /create for room creation in the `adapter`'s database
-        - room mechanics are controlled by `adapter` module, so I'll write/customize one for cassandra or something
-            - join full -> error
-            - join nonexistent -> error
-        - all gamerooms are under the default `Namespace`
-            - Namespaces are for multiplexing multiple Sockets (of different Namespaces) across a single transport (engine.io Client)
-            - might be useful to have a dumb `/chat` channel that doesn't care about lag state or syncronization for each gameroom using namespaces
-        - `io.use(function(socket, next)) middleware useful for room assignment and other handshake steps
-            - XXX room assignment maybe, but handshakey stuff might need to be after the 'connection' event.  what's the difference between the two?
-    - for engine.io i'll likely be reimplementing socket.io rooms and events in a less maintainable way
-    - for einaros/ws, a single HTTP server accepting PUT to /create with many WebSocketServers listening on their own /play/<room_id>
-        - a whole server per room may be pretty wasteful
-        - just like engine.io, i'll likely be reimplementing rooms and events
+    - room mechanics are controlled by `adapter` module, so I'll write/customize one for cassandra or something
+        - join full -> error
+        - join nonexistent -> error
+    - all gamerooms are under the default `Namespace`
+        - Namespaces are for multiplexing multiple Sockets (of different Namespaces) across a single transport (engine.io Client)
+        - might be useful to have a dumb `/chat` channel that doesn't care about lag state or syncronization for each gameroom using namespaces
+    - `io.use(function(socket, next)) middleware useful for room assignment and other handshake steps
+        - XXX room assignment maybe, but handshakey stuff might need to be after the 'connection' event.  what's the difference between the two?
+- for engine.io i'll likely be reimplementing socket.io rooms and events in a less maintainable way
+- for einaros/ws, a single HTTP server accepting PUT to /create with many WebSocketServers listening on their own /play/<room_id>
+    - a whole server per room may be pretty wasteful
+    - just like engine.io, i'll likely be reimplementing rooms and events
 
 ## Service Model Comparison
 
