@@ -15,9 +15,9 @@ Each gameroom can be thought of as
 Under the hood each gameroom is a sequence of command turns.
 A gameroom is considered joined by a client if that client is connected to the /play/&lt;gameroom id&gt; realtime channel, then handshakes with the appropriate
 
-    - gamestate hash
-    - command turn number
-    - session id (reconnect only - not initial connect)
+- gamestate hash
+- command turn number
+- session id (reconnect only - not initial connect)
 
 A gameroom is initialized by a zeroth command turn that has no compliance requirement for session IDs (anyone can join a game that hasn't started).
 
