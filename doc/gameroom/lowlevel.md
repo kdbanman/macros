@@ -2,8 +2,10 @@
 
 ## Gameroom State
 
-*Important:* This does not refer to `gameroom.state`.
-That is the client-side game state.
+*Important:*
+
+- Gameroom state does not refer to game-specific `gameroom.state`.
+- Session ID refers to the cross-gameroom, server-side *only*, browser session ID.  (Player number is the client-side `gameroom.me`)
 
 Each gameroom can be thought of as 
 
@@ -11,13 +13,13 @@ Each gameroom can be thought of as
 2. Logging previous states
 
 Under the hood, though, each gameroom is a sequence of command turns.
-A gameroom is considered joined if a gameroom client connects to the /play/&lt;gameroom id&gt; and handshakes with the appropriate
+A gameroom is considered joined by a client if client is connected to the /play/&lt;gameroom id&gt; realtime channel, then handshakes with the appropriate
 
-    - previous gamestate hash
+    - session id
     - gamestate hash
     - command turn number
 
-A gameroom is initialized by a zeroth command turn that has no compliance requirement for previous gamestate hash.
+A gameroom is initialized by a zeroth command turn that has no compliance requirement for session IDs (anyone can join a game that hasn't started).
 
 Once the server has shipped off its command packet for a particular command turn of a gameroom, that turn is closed and a new one is opened.
 Errors or disconnections do not close a command turn, so they do not close a gameroom either.
@@ -26,18 +28,49 @@ If a game does not use the optional `gameroom.close()`, a gameroom is never "clo
 Unless a client is misbehaving (iterating before receipt), only commands for a single command turn will arrive for the room.
 Hence, it is either a gameroom error or an attack to receive commands ahead of the currently open command turn.
 
-TODO: solidify and formalize data model
+### Data Model
 
-- turn number
-    - number of players (expected)
-    - socket id 1
-        - previous arrival lag/lead
-        - latency
-        - framerate
-        - gamestate hash
-        - command body
-    - socket id 2, 3, ...
-        - <same as sid 1>
+Master JSON data spec for each command turn:
+
+```
+{
+    gameroom_id:        string,
+    turn_number:        integer,
+    closed:             boolean,
+    player_count:       integer,
+    state_hash:         string,
+    session_ids:         [<session id 1>,
+                         <session id 2>,
+                         ...
+                         <session id N>],
+    received_commands:  {<session id 1>: Client Command,
+                         <session id 2>: Client Command,
+                         ...
+                         <session id N>: Client Command}
+    sent_command:       Server Command,
+    errors:             [Error,
+                         Error,
+                         ...
+                         Error]
+}
+```
+
+Data spec after specific events:
+
+TODO: ONLY changes in state are specifififific here.  Remember to record everything, you can exclude it from production if expensive.
+
+1. Gameroom Initialization
+    1. First client(s) connect
+    2. Client(s) disconnect
+    3. Final client connects (server packet sent, turn 1 initialized)
+2. Turn N >= 1 Initialization
+    1. First client(s) send commands
+    2. Client(s) disconnect
+    3. Client(s) report lag in command receipt before server packet sent
+    4. Client(s) send commands with unexpected state hash
+    5. Unexpected client(s) try to send command
+    4. Final client commit (server packet sent)
+    5. Client(s) report lag in command receipt after server packet sent
 
 Derived state:
 
