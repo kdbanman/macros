@@ -1,12 +1,40 @@
 # GameRoom
 
-## Gameroom States
+## Gameroom State
 
-Each room tracks current state and logs previous states.
+*Important:* This does not refer to `gameroom.state`.
+That is the client-side game state.
+
+Each gameroom can be thought of as 
+
+1. Tracking current state
+2. Logging previous states
+
+Under the hood, though, each gameroom is a sequence of command turns.
+A gameroom is considered joined if a gameroom client connects to the /play/&lt;gameroom id&gt; and handshakes with the appropriate
+
+    - gamestate hash
+    - command turn number
+
+Once the server has shipped off its command packet for a particular command turn of a gameroom, that turn is closed and a new one is opened.
+
+TODO, gamerooms open or closed:
+
+- should gameroom closure even be a thing?
+- What should cause gameroom closure?
+- if all players disconnect, that could mean that
+    - somebody won and everyone left (normal)
+    - the server went offline
+    - someone lagged out and everyone got pissed off and left
+    - everyone lagged out
+- even if there is divergence, the turn should still be left open in case resync is possible.
+
+- but if gamerooms were left open after the normal case (even if it were just for a day or an hour or a minute), a nefarious person could maybe mess with stuff.
+
 State of each turn determines server packet broadcast to gameroom members.
 Unless a client is misbehaving (iterating before receipt), only commands for a single command turn will arrive for the room.
 
-Raw state:
+TODO: solidify and formalize data model
 
 - turn number
     - number of players (expected)
@@ -68,7 +96,7 @@ Packets live the following life, provided there are no error/exception flows:
 
 ### From Client
 
-Command packets include a header with timing control data (latency, framerate), gamestate checksum, and a body for actual game commands.
+Command packets include a header with timing control data (latency, framerate), gamestate checksum, command turn number, and a body for actual game commands.
 Each game command within the body includes the time elapsed from the previous threshold for ordering.
 
 TODO: JSON model
