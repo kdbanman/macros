@@ -13,26 +13,18 @@ Each gameroom can be thought of as
 Under the hood, though, each gameroom is a sequence of command turns.
 A gameroom is considered joined if a gameroom client connects to the /play/&lt;gameroom id&gt; and handshakes with the appropriate
 
+    - previous gamestate hash
     - gamestate hash
     - command turn number
 
+A gameroom is initialized by a zeroth command turn that has no compliance requirement for previous gamestate hash.
+
 Once the server has shipped off its command packet for a particular command turn of a gameroom, that turn is closed and a new one is opened.
+Errors or disconnections do not close a command turn, so they do not close a gameroom either.
+If a game does not use the optional `gameroom.close()`, a gameroom is never "closed", because there will always be an waiting open command turn.
 
-TODO, gamerooms open or closed:
-
-- should gameroom closure even be a thing?
-- What should cause gameroom closure?
-- if all players disconnect, that could mean that
-    - somebody won and everyone left (normal)
-    - the server went offline
-    - someone lagged out and everyone got pissed off and left
-    - everyone lagged out
-- even if there is divergence, the turn should still be left open in case resync is possible.
-
-- but if gamerooms were left open after the normal case (even if it were just for a day or an hour or a minute), a nefarious person could maybe mess with stuff.
-
-State of each turn determines server packet broadcast to gameroom members.
 Unless a client is misbehaving (iterating before receipt), only commands for a single command turn will arrive for the room.
+Hence, it is either a gameroom error or an attack to receive commands ahead of the currently open command turn.
 
 TODO: solidify and formalize data model
 
