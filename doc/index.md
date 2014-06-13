@@ -51,7 +51,19 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 
 ### [API documentation](gameroom/client.md)
 
-- (empty)
+- add gamroom.lagging()
+    - background - ask for a resend
+
+- add gameroom.desynced() for resync attempt
+    - background - engage dump to server
+    - advanced use only.
+    - do you know what reversible automata are? if so, do you think they matter here?
+    - regardless, are you brave enough to try to implement rewind?
+
+- add gameroom.close() for gameroom closure
+    - prevents further gameroom change or rejoin
+    - this is not automatically called. if everyone leaves because of lag, and their browsers are elephants, then they can rejoin later!
+    - yay sequentially defined state!
 
 ## Macros Game
 
