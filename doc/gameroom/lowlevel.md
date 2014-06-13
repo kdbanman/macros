@@ -12,18 +12,19 @@ Each gameroom can be thought of as
 1. Tracking current command turn state
 2. Logging previous commond turn states
 
-Under the hood, though, each gameroom is a sequence of command turns.
-A gameroom is considered joined by a client if client is connected to the /play/&lt;gameroom id&gt; realtime channel, then handshakes with the appropriate
+Under the hood each gameroom is a sequence of command turns.
+A gameroom is considered joined by a client if that client is connected to the /play/&lt;gameroom id&gt; realtime channel, then handshakes with the appropriate
 
-    - session id
     - gamestate hash
     - command turn number
+    - session id (reconnect only - not initial connect)
 
 A gameroom is initialized by a zeroth command turn that has no compliance requirement for session IDs (anyone can join a game that hasn't started).
 
-Once the server has shipped off its command packet for a particular command turn of a gameroom, that turn is closed and a new one is opened.
+Once the server has shipped off its command packet for a particular command turn of a gameroom, that turn is closed (previous state) and a new one is opened (current state).
 Errors or disconnections do not close a command turn, so they do not close a gameroom either.
-If a game does not use the optional `gameroom.close()`, a gameroom is never "closed", because there will always be an waiting open command turn.
+Errors become part of a game room's state.
+In fact, if a game does not use the optional `gameroom.close()`, a gameroom is never "closed", because there will always be an waiting open command turn.
 
 Unless a client is misbehaving (iterating before receipt), only commands for a single command turn will arrive for the room.
 Hence, it is either a gameroom error or an attack to receive commands ahead of the currently open command turn.
@@ -57,7 +58,7 @@ Master JSON data spec for each command turn:
 
 Data spec after specific events:
 
-TODO: ONLY changes in state are specifififific here.  Remember to record everything, you can exclude it from production if expensive.
+TODO: ONLY changes in state are specifififific here.  Remember to record everything, you can exclude it from production if expensive.  Decide if lag (or which lag reports) goes into state model and how.
 
 1. Gameroom Initialization
     1. First client(s) connect
@@ -68,6 +69,8 @@ TODO: ONLY changes in state are specifififific here.  Remember to record everyth
     2. Client(s) disconnect
     3. Client(s) report lag in command receipt before server packet sent
     4. Client(s) send commands with unexpected state hash
+    4. Client(s) send commands for a previous turn
+    4. Client(s) send commands for a future turn
     5. Unexpected client(s) try to send command
     4. Final client commit (server packet sent)
     5. Client(s) report lag in command receipt after server packet sent
@@ -108,6 +111,8 @@ Vacancy
 ## Command Packets
 
 Packets live the following life, provided there are no error/exception flows:
+
+TODO: read this considering the fifference between session ID and player ID
 
 1. Packets are prepared at each client with a body of game-specific commands and a gameroom header, then sent to the server.
 2. When the server receives a client packet, it is stored and identified by `gameroom ID`, `command turn number`, and `client ID`.
