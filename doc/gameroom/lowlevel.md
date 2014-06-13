@@ -9,8 +9,8 @@
 
 Each gameroom can be thought of as 
 
-1. Tracking current state
-2. Logging previous states
+1. Tracking current command turn state
+2. Logging previous commond turn states
 
 Under the hood, though, each gameroom is a sequence of command turns.
 A gameroom is considered joined by a client if client is connected to the /play/&lt;gameroom id&gt; realtime channel, then handshakes with the appropriate
