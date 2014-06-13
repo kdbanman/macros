@@ -34,31 +34,33 @@ The client-side gameroom module is responsible for controlling client game state
 ## Requirements
 
 - must handle defaultest browser configurations possible
+- must be tolerant to poor/changing latency
+- must be tolerant of different and changing engine iteration times
+- must be tolerant to dropped or out-of-order packets (see [Two Generals' Problem](http://en.wikipedia.org/wiki/Two_Generals%27_Problem))
+- must *not* be responsible for engine-specific command validation
 - must persistently record all gameroom activity
     - error states and traces are very important (ex. state divergence)
         - on disconnect or exception, dump as much as possible to server
 - must detect and react to client divergence of game engine state
     - gamestate hashes generated client-side, compared server-side (consensus)
-- must be user-id aware
-    - guest uuid if none supplied
-    - XXX part of optional configuration for richer recorded data?
 - must be some means for player to reconnect from disconnection or accidental back button
     - must *not* be responsible for resynchronization of game state (only verification of resync success)
-- must be tolerant to poor/changing latency
-- must be tolerant of different and changing engine iteration times
-- must be tolerant to dropped command packets (see [Two Generals' Problem](http://en.wikipedia.org/wiki/Two_Generals%27_Problem))
-- must *not* be responsible for engine-specific command validation
+- must be optionally user-id aware
+    - game-supplied username associated with comms uid
+- if one or more clients disconnect from a room, they must reconnect as the same players
 
 ## Contracts for Game
 
 - enforces full determinism of engine
-- gamestate hash divergence halts normal lock-step cycle
-    - XXX possible resync attempt use case may restart lock-step?
+- enforces player reference and object creation/reference by gameroom supplied ids
 - players joining/leaving (with possible async setup pipelines) must be handled before game room connection
-- enforces game state mutation by only by command packets
+- enforces game state mutation by player input only through command packets
     - view/controller is a command sender, client gameroom is a command receiver and applier
     - command conflict resolution must be performed client-side
-- enforces player reference and object creation/reference by gameroom supplied ids
+- lag of server command receipt halts normal lock-step cycle
+    - invokes optional lag cycle
+- gamestate hash divergence halts normal lock-step cycle
+    - invokes optional out-of-sync cycle
 
 ## Server
 
@@ -78,4 +80,3 @@ The server must have realtime connection acceptance/denial logic per gameroom:
         - gamestate hash agreement 
         - turn number agreement
     - denied otherwise
-    - XXX do we need *re*connection semantics? if client session does not match a current disconnect slot?
