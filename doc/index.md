@@ -47,6 +47,8 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
            
 ### [Design and Implementation](gameroom/lowlevel.md)
 
+- figure out how to hash gamestate objects consistently across browsers
+
 - define all possible state transitions within state tree
 
 - design Comms packets to enable state transitions
