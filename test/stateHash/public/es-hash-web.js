@@ -108,10 +108,10 @@ esHash.hash = function (object, algorithm) {
 
     // Test that algorithm is defined
     // <debug>
-    if (typeof(algorithms[algorithm]) == "undefined") {
+    if (typeof(esHash.algorithms[algorithm]) == "undefined") {
         throw "Undefined algorithm " + algorithm;
     }
     // </debug>
 
-    return algorithms[algorithm](hashs.join('|'));
+    return esHash.algorithms[algorithm](hashs.join('|'));
 };
