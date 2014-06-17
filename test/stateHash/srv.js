@@ -21,25 +21,24 @@ ioSrv.on('connection', function (socket) {
     
     // get identification info from socket request
     var userAgent = socket.request.headers['user-agent'];
-    var ip = socket.request.headers['host'];
     
     // initialize seed counter
     var currSeed = 1;
 
     // emit initial generate command
     socket.emit('generate', genCommand(currSeed));
-    console.log('emitted command %d to %s of %s', currSeed, userAgent, ip);
+    console.log('emitted command %d to %s', currSeed, userAgent);
 
     // receive client result events
     socket.on('result', function (data) {
-        console.log('received result from %s of %s', userAgent, ip);
+        console.log('received result from %s', userAgent);
     
         // increment seed counter
         currSeed = data.seed + 1;
 
         // emit subsequent generate command
         socket.emit('generate', genCommand(currSeed));
-        console.log('emitted command %d to %s of %s', currSeed, userAgent, ip);
+        console.log('emitted command %d to %s', currSeed, userAgent);
     });
 });
 
