@@ -24,9 +24,6 @@ ioSrv.on('connection', function (socket) {
     var ip = socket.request.headers['host'];
     
     // initialize seed counter
-    // each generate command size = ceil(currSeed / 10), seed = currSeed
-    // this ensures that a deterministic sequence of generate commands are sent
-    // there will be 10 objects of each size generated
     var currSeed = 1;
 
     // emit initial generate command
