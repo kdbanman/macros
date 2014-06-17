@@ -21,24 +21,41 @@ ioSrv.on('connection', function (socket) {
     
     // get identification info from socket request
     var userAgent = socket.request.headers['user-agent'];
+    console.log('Connection from %s', userAgent);
     
     // initialize seed counter
     var currSeed = 1;
 
-    // emit initial generate command
-    socket.emit('generate', genCommand(currSeed));
-    console.log('emitted command %d to %s', currSeed, userAgent);
+    // emit initial generate command, appendng current time in millis
+    socket.emit('generate', _.extend(genCommand(currSeed), {sent: Date.now()}));
 
     // receive client result events
-    socket.on('result', function (data) {
-        console.log('received result from %s', userAgent);
-    
-        // increment seed counter
-        currSeed = data.seed + 1;
+    socket.on('result', function (data, fn) {
+        // append round trip millis, or -1 if sent property is missing
+        data.rtt = data.sent ? Date.now() - data.sent : -1;
 
-        // emit subsequent generate command
-        socket.emit('generate', genCommand(currSeed));
-        console.log('emitted command %d to %s', currSeed, userAgent);
+        // call client callback
+        fn();
+
+        // store client results
+        // TODO slam this in a postgres thing
+        // resultsStore.store(data);
+
+        // increment seed counter and emit subsequent generate command
+        // append current time in millis
+        currSeed = data.seed + 1;
+        socket.emit('generate', _.extend(genCommand(currSeed), {sent: Date.now()}));
+    });
+
+    // report disconnections
+    socket.on('disconnect', function() {
+        console.log('Disconnection from %s', userAgent);
+    });
+
+    // report errors
+    socket.on('error', function(err) {
+        console.log('ERROR from %s:', userAgent);
+        console.log('    ' + JSON.stringify(err));
     });
 });
 
