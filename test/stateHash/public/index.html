@@ -1,9 +1,72 @@
 <!doctype html>
 <html>
     <head>
+        <style>
+            body {
+              font-family: Helvetica, arial, sans-serif;
+              font-size: 14px;
+              line-height: 1.6;
+              padding-top: 10px;
+              padding-bottom: 10px;
+              background-color: white;
+              padding: 30px; }
+
+            body > *:first-child {
+              margin-top: 0 !important; }
+
+            body > *:last-child {
+              margin-bottom: 0 !important; }
+
+            p, blockquote, ul, ol, dl, li, table, pre {
+              margin: 15px 0; }
+
+            code, tt {
+              margin: 0 2px;
+              padding: 0 5px;
+              white-space: nowrap;
+              border: 1px solid #eaeaea;
+              background-color: #f8f8f8;
+              border-radius: 3px; }
+
+            pre code {
+              margin: 0;
+              padding: 0;
+              white-space: pre;
+              border: none;
+              background: transparent; }
+
+            .highlight pre {
+              background-color: #f8f8f8;
+              border: 1px solid #cccccc;
+              font-size: 13px;
+              line-height: 19px;
+              overflow: auto;
+              padding: 6px 10px;
+              border-radius: 3px; }
+
+            pre {
+              background-color: #f8f8f8;
+              border: 1px solid #cccccc;
+              font-size: 13px;
+              line-height: 19px;
+              overflow: auto;
+              padding: 6px 10px;
+              border-radius: 3px; }
+
+            pre code, pre tt {
+              background-color: transparent;
+              border: none; }
+        </style>
         <title>stateHash</title>
     </head>
     <body>
+        <p>Thanks for donating some of your CPU cycles!  You're helping me learn how to synchronize multiplayer games:)</p>
+        <p>Your 'puter is generating, hashing, and serializing the objects rendered below, then it's telling my server what went down.</p>
+        <p>Status: <span id="status">WAITING</span></p>
+        <pre><code><div id="rendered"></div></code></pre>
+        <script src="mersenne-twister.js"></script>
+        <script src="es-hash-web.js"></script>
+        <script src="rand.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script src="comms.js"></script>
     </body>
