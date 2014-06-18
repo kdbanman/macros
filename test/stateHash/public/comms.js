@@ -6,10 +6,8 @@ var processCommand = function (command) {
     var results = {size: command.size, seed: command.seed};
 
     var setGeneratingView = new Promise(function (resolve, reject) {
-        // change status and output divs for new command
-        
+        // change status
         var statusStr = 'GENERATING OBJECT SIZE ' + command.size;
-
         $('#status').html(statusStr);
         resolve();
     });
@@ -41,21 +39,30 @@ var processCommand = function (command) {
         return generated;
     };
 
-    var hashObject = function (generated) {
-        // TODO use all hashcode algorithms
-        var start = Date.now();
-        var hashcode = esHash.hash(generated);
-        results.time_hashing = Date.now() - start;
-        results.hashcode = hashcode;
-        $('#hashcode').html(hashcode);
-        return results; //TODO the FINAL hash function must return results 
+    var hashObject = function(algorithm) {
+        return function (generated) {
+            var start = Date.now();
+            var hashcode = esHash.hash(generated, algorithm);
+            results['time_hashing_' + algorithm] = Date.now() - start;
+            results['hash_' + algorithm] = hashcode;
+            $('#' + algorithm).html(hashcode);
+            return generated;
+        }
+    };
+
+    var finalizeResults = function(generated) {
+        return results;
     };
 
     return setGeneratingView.then(generateObject)
                             .then(setSerializingView)
                             .then(serializeObject)
                             .then(setHashingView)
-                            .then(hashObject);
+                            .then(hashObject('djb2'))
+                            .then(hashObject('sdbm'))
+                            .then(hashObject('javaHashCode'))
+                            .then(hashObject('crc32'))
+                            .then(finalizeResults);
 }
 
 socket.on('generate', function (command) {
