@@ -9,6 +9,14 @@ var processCommand = function (command) {
         // change status
         var statusStr = 'GENERATING OBJECT SIZE ' + command.size;
         $('#status').html(statusStr);
+
+        // add old class from hashcodes and object
+        $('#djb2').addClass('old');
+        $('#sdbm').addClass('old');
+        $('#javaHashCode').addClass('old');
+        $('#crc32').addClass('old');
+        $('#rendered').addClass('old');
+
         resolve();
     });
 
@@ -31,6 +39,7 @@ var processCommand = function (command) {
         results.time_serialization = Date.now() - start;
         results.object = serialized;
         $('#rendered').text(serialized);
+        $('#rendered').removeClass('old');
         return generated;
     };
 
@@ -46,6 +55,7 @@ var processCommand = function (command) {
             results['time_hashing_' + algorithm] = Date.now() - start;
             results['hash_' + algorithm] = hashcode;
             $('#' + algorithm).html(hashcode);
+            $('#' + algorithm).removeClass('old');
             return generated;
         }
     };
