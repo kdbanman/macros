@@ -31,15 +31,24 @@ ioSrv.on('connection', function (socket) {
 
     // receive client result events
     socket.on('result', function (data, fn) {
+
         // append round trip millis
         data.rtt = Date.now() - data.sent;
+
+        // verify client data and function (client callback executed within)
+        /* TODO verifier and resultsStore
+         * verifier.verify(data, fn)
+         *      .then(resultsStore.store)
+         *      .catch(function (badClientOrStoreError) {
+         *          
+         *      });
+         *
+         */
+
 
         // call client callback
         fn();
 
-        // store client results
-        // TODO slam this in a postgres thing
-        // resultsStore.store(data);
 
         // increment seed counter and emit subsequent generate command
         // append current time in millis
