@@ -1,48 +1,61 @@
 var socket = io(window.location.origin);
 socket.waiting = true;
 
-socket.on('generate', function (data) {
-
-    // set socket waiting state
-    socket.waiting = false;
+var processCommand = function (command) {
     
+    // TODO promisify this for async ui updates
+
     // change status and output divs for new command
     
     $('#rendered').html('');
     $('#hashcode').html('');
     
     var statusStr = 'GENERATING OBJECT SIZE ' +
-                    data.size +
+                    command.size +
                     'FROM SEED ' +
-                    data.seed;
+                    command.seed;
     $('#status').html(statusStr);
 
     // generate object
     
-    var generator = new MersenneTwister(data.seed);
-    var generated = rand.generateObject(data.size, generator);
+    var generator = new MersenneTwister(command.seed);
+    var generated = rand.generateObject(command.size, generator);
 
     // serialize and render object
 
     $('#status').html('SERIALIZING OBJECT');
     var serialized = JSON.stringify(generated, null, '  ');
-    data.object = serialized;
+    command.object = serialized;
 
     $('#rendered').html(serialized);
 
     // hash object
+    // TODO use all hashcode algorithms
 
     $('#status').html('HASHING OBJECT');
     var hashcode = esHash.hash(generated);
-    data.hashcode = hashcode;
+    command.hashcode = hashcode;
 
     $('#hashcode').html(hashcode);
 
     // report to server
     $('#status').html('REPORTING TO SERVER');
-    socket.emit('result', data, function () {
-        if (socket.waiting) $('#status').html('WAITING ON SERVER');
-    });
+
+    return command;
+}
+
+var confirmResults = function () {
+    if (socket.waiting) $('#status').html('WAITING ON SERVER');
+}
+
+socket.on('generate', function (command) {
+
+    // set socket waiting state
+    socket.waiting = false;
+    
+    var results = processCommand(command);
+
+    socket.emit('result', command, confirmResults);
 
     // set socket to waiting 
     socket.waiting = true;
