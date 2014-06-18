@@ -11,7 +11,7 @@
               padding-bottom: 10px;
               background-color: white;
               padding: 30px;
-              max-width: 800px; }
+              max-width: 32em; }
 
             body > *:first-child {
               margin-top: 0 !important; }
@@ -66,8 +66,12 @@
     </head>
     <body>
         <p>Thanks for donating some of your CPU cycles and bandwidth!  You're helping me learn how to synchronize multiplayer games:)</p>
-        <p>NOTE: This thing hogs battery life and bandwidth, so be careful if either of those matter to you.</p>
-        <p>Your 'puter is generating, hashing, and serializing bigger and bigger objects, then it's telling my server what went down.</p>
+        <p><i>NOTE: This thing hogs battery life and bandwidth, so be careful if either of those matter to you.</i></p>
+        <p>Your 'puter is generating and processing objects, and it's telling my server what went down each time.  It'll make bigger and bigger objects (taking more and more time) until size 200 is reached.  After that, the size will go back down to one and things will get <b>rippin' fast</b> all over again.</p>
+        <p>The same sequence of 200 objects probably won't be seen ever again, even if your browser sits until its processor burns up!  ...until you revisit the page.  Every time you revisit the page, no matter the browser, operating system, platform or architecture, the same objects should be coughed up every time.</p>
+        <p>That sameness is an important thing for me to figure out!  If you want to help me, visit this site on Firefox, Chrome, Safari, Opera, Tor, Maxthon, Skyfire, Avant, Konqueror, Midori, uZard, or even Internet Explorer!</p>
+        <p>Visits from desktops, tablets, and phones help too!  Like I said, though, <i>don't do it for long if your battery or network bandwidth are limited!</i></p>
+        <p>Did something weird/bad happen?  <a href="mailto:kirby.banman@gmail.com">Tell me if you feel like it.</a></p>
         <p>Status: <code><span id="status">WAITING ON SERVER</span></code></p>
         <p>Hashcodes:</p>
         <pre><code>djb2:          <span id="djb2"></span>
