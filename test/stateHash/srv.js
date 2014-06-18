@@ -52,8 +52,12 @@ ioSrv.on('connection', function (socket) {
         console.log('Disconnection from %s', userAgent);
     });
 
-    // report errors
+    // report errors (socket.io error event and my own)
     socket.on('error', function(err) {
+        console.log('ERROR from %s:', userAgent);
+        console.log('    ' + JSON.stringify(err));
+    });
+    socket.on('stateHash error', function(err) {
         console.log('ERROR from %s:', userAgent);
         console.log('    ' + JSON.stringify(err));
     });
