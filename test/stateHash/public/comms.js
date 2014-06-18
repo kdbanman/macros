@@ -7,13 +7,8 @@ var processCommand = function (command) {
 
     var setGeneratingView = new Promise(function (resolve, reject) {
         // change status and output divs for new command
-        $('#rendered').html('');
-        $('#hashcode').html('');
         
-        var statusStr = 'GENERATING OBJECT SIZE ' +
-                        command.size +
-                        'FROM SEED ' +
-                        command.seed;
+        var statusStr = 'GENERATING OBJECT SIZE ' + command.size;
 
         $('#status').html(statusStr);
         resolve();
@@ -21,7 +16,9 @@ var processCommand = function (command) {
 
     var generateObject = function () {
         var generator = new MersenneTwister(command.seed);
+        var start = Date.now();
         var generated = rand.generateObject(command.size, generator);
+        results.time_generation = Date.now() - start;
         return generated;
     };
 
@@ -31,9 +28,11 @@ var processCommand = function (command) {
     };
 
     var serializeObject = function (generated) {
+        var start = Date.now();
         var serialized = JSON.stringify(generated, null, '  ');
+        results.time_serialization = Date.now() - start;
         results.object = serialized;
-        $('#rendered').html(serialized);
+        $('#rendered').text(serialized);
         return generated;
     };
 
@@ -44,7 +43,9 @@ var processCommand = function (command) {
 
     var hashObject = function (generated) {
         // TODO use all hashcode algorithms
+        var start = Date.now();
         var hashcode = esHash.hash(generated);
+        results.time_hashing = Date.now() - start;
         results.hashcode = hashcode;
         $('#hashcode').html(hashcode);
         return results; //TODO the FINAL hash function must return results 
