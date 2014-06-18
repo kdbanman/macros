@@ -31,8 +31,8 @@ ioSrv.on('connection', function (socket) {
 
     // receive client result events
     socket.on('result', function (data, fn) {
-        // append round trip millis, or -1 if sent property is missing
-        data.rtt = data.sent ? Date.now() - data.sent : -1;
+        // append round trip millis
+        data.rtt = Date.now() - data.sent;
 
         // call client callback
         fn();
