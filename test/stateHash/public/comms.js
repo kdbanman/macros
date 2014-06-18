@@ -3,49 +3,58 @@ socket.waiting = true;
 
 var processCommand = function (command) {
     
-    // TODO promisify this for async ui updates
+    var results = {size: command.size, seed: command.seed};
 
-    // change status and output divs for new command
-    
-    $('#rendered').html('');
-    $('#hashcode').html('');
-    
-    var statusStr = 'GENERATING OBJECT SIZE ' +
-                    command.size +
-                    'FROM SEED ' +
-                    command.seed;
-    $('#status').html(statusStr);
+    var setGeneratingView = new Promise(function (resolve, reject) {
+        // change status and output divs for new command
+        $('#rendered').html('');
+        $('#hashcode').html('');
+        
+        var statusStr = 'GENERATING OBJECT SIZE ' +
+                        command.size +
+                        'FROM SEED ' +
+                        command.seed;
 
-    // generate object
-    
-    var generator = new MersenneTwister(command.seed);
-    var generated = rand.generateObject(command.size, generator);
+        $('#status').html(statusStr);
+        resolve();
+    });
 
-    // serialize and render object
+    var generateObject = function () {
+        var generator = new MersenneTwister(command.seed);
+        var generated = rand.generateObject(command.size, generator);
+        return generated;
+    };
 
-    $('#status').html('SERIALIZING OBJECT');
-    var serialized = JSON.stringify(generated, null, '  ');
-    command.object = serialized;
+    var setSerializingView = function (generated) {
+        $('#status').html('SERIALIZING OBJECT');
+        return generated;
+    };
 
-    $('#rendered').html(serialized);
+    var serializeObject = function (generated) {
+        var serialized = JSON.stringify(generated, null, '  ');
+        results.object = serialized;
+        $('#rendered').html(serialized);
+        return generated;
+    };
 
-    // hash object
-    // TODO use all hashcode algorithms
+    var setHashingView = function (generated) {
+        $('#status').html('HASHING OBJECT');
+        return generated;
+    };
 
-    $('#status').html('HASHING OBJECT');
-    var hashcode = esHash.hash(generated);
-    command.hashcode = hashcode;
+    var hashObject = function (generated) {
+        // TODO use all hashcode algorithms
+        var hashcode = esHash.hash(generated);
+        results.hashcode = hashcode;
+        $('#hashcode').html(hashcode);
+        return results; //TODO the FINAL hash function must return results 
+    };
 
-    $('#hashcode').html(hashcode);
-
-    // report to server
-    $('#status').html('REPORTING TO SERVER');
-
-    return command;
-}
-
-var confirmResults = function () {
-    if (socket.waiting) $('#status').html('WAITING ON SERVER');
+    return setGeneratingView.then(generateObject)
+                            .then(setSerializingView)
+                            .then(serializeObject)
+                            .then(setHashingView)
+                            .then(hashObject);
 }
 
 socket.on('generate', function (command) {
@@ -53,10 +62,22 @@ socket.on('generate', function (command) {
     // set socket waiting state
     socket.waiting = false;
     
-    var results = processCommand(command);
+    // call master process
+    processCommand(command).then(function (results) {
 
-    socket.emit('result', command, confirmResults);
+        // report to server
+        $('#status').html('REPORTING TO SERVER');
 
-    // set socket to waiting 
-    socket.waiting = true;
+        socket.emit('result', command, function () {
+            if (socket.waiting) $('#status').html('WAITING ON SERVER');
+        });
+
+        // set socket to waiting 
+        socket.waiting = true;
+
+    }, function (error) {
+        socket.emit('hashState error', error);
+        $('#status').html(JSON.stringify(error));
+        console.log(error);
+    });
 });
