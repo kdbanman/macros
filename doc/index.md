@@ -23,14 +23,16 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 
 # TODO
 
-- Current major VSLICE TODOs are listed below per file in order of priority
+- Current major VSLICE TODOs are listed below
 - Current minor VSLICE TODOs are in the files themselves with TODO markers
     - Per-TODO notes are below to keep the other documents clean
 - TODOs outside the scope of VSLICE are in the files themselves
 
 ## Server and Communications
 
-- make sure session ID and client ID are used to refer to server-side *only*, cross-gameroom browser identifier, while player ID and player number are used for gameroom specific id tasks
+- find fastest, most cross-browser reliable game state hash algorithm
+
+- across all documentation, make sure session ID and client ID are used to refer to server-side *only*, cross-gameroom browser identifier, while player ID and player number are used for gameroom specific id tasks
     - the former should not be exposed client side for security reasons
     - the latter is used server and client-side
     - session id to player number is one to many
@@ -47,7 +49,7 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
            
 ### [Design and Implementation](gameroom/lowlevel.md)
 
-- figure out how to hash gamestate objects consistently across browsers
+- declare browser hash algorithm choice, link to possible stats writeup
 
 - define all possible state transitions within state tree
 
