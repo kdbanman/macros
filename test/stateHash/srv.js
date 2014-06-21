@@ -57,8 +57,6 @@ ioSrv.on('connection', function (socket) {
                 socket.disconnect();
             } else {
 
-                var time_writing = Date.now();
-
                 // data was valid, store it using an error callback
                 storage.store(data, function(err) {
                     if (err) {
@@ -73,9 +71,6 @@ ioSrv.on('connection', function (socket) {
                             socket.disconnect();
                         }
                     }
-
-                    time_writing = Date.now() - time_writing;
-                    //TODO write event emitter to give # connected and write avg/slowest stats
                 });
             }
         });
