@@ -36,10 +36,12 @@ var processCommand = function (command) {
 
     var serializeObject = function (generated) {
         var start = Date.now();
-        var serialized = JSON.stringify(generated, null, '  ');
+        var serialized = JSON.stringify(generated);
         results.time_serialization = Date.now() - start;
         results.object = serialized;
-        $('#rendered').text(serialized);
+
+        var pretty = JSON.stringify(generated, null, '  ');
+        $('#rendered').text(pretty);
         $('#rendered').removeClass('old');
         return generated;
     };
@@ -87,7 +89,7 @@ socket.on('generate', function (command) {
         // report to server
         $('#status').html('REPORTING TO SERVER');
 
-        socket.emit('result', command, function () {
+        socket.emit('result', results, function () {
             if (socket.waiting) $('#status').html('WAITING ON SERVER');
         });
 
