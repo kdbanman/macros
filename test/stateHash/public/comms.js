@@ -3,6 +3,7 @@ socket.waiting = true;
 
 var processCommand = function (command) {
     
+    // initialize object to contain hashing, serialization, and timing results
     var results = {size: command.size, seed: command.seed};
 
     var setGeneratingView = new Promise(function (resolve, reject) {
@@ -95,7 +96,16 @@ socket.on('generate', function (command) {
 
     }, function (error) {
         socket.emit('hashState error', error);
-        $('#status').html(JSON.stringify(error));
-        console.log(error);
+        reportError(error);
     });
 });
+
+var reportError = function (err)
+{
+    socket.waiting = false;
+    $('#status').html(JSON.stringify(err));
+    console.log(err);
+};
+
+socket.on('error', reportError);
+socket.on('server error', reportError);
