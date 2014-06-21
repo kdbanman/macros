@@ -4,7 +4,7 @@ socket.waiting = true;
 var processCommand = function (command) {
     
     // initialize object to contain hashing, serialization, and timing results
-    var results = {size: command.size, seed: command.seed};
+    var results = JSON.parse(JSON.stringify(command));
 
     var setGeneratingView = new Promise(function (resolve, reject) {
         // change status
