@@ -5,6 +5,8 @@ var logger = require('morgan');
 var io = require('socket.io');
 var _ = require('underscore');
 var genCommand = require('./lib/generate.js');
+var validateCommand = require('./lib/validate.js');
+var storage = require('./lib/storage.js');
 
 var app = express();
 var server = http.Server(app)
@@ -26,6 +28,9 @@ ioSrv.on('connection', function (socket) {
     // initialize seed counter
     var currSeed = 1;
 
+    // count write errors caused by this client
+    var writeErrors = 0;
+
     // emit initial generate command, appendng current time in millis
     socket.emit('generate', _.extend(genCommand(currSeed), {sent: Date.now()}));
 
@@ -34,22 +39,35 @@ ioSrv.on('connection', function (socket) {
 
         // append round trip millis
         data.rtt = Date.now() - data.sent;
-
-        // verify client data and function (client callback executed within)
-        /* TODO verifier and resultsStore
-         * verifier.verify(data, fn)
-         *      .then(resultsStore.store)
-         *      .catch(function (badClientOrStoreError) {
-         *          
-         *      });
-         *
-         */
-
-
-        // call client callback
+        
+        // call client callback to notify receipt
         fn();
 
-
+        // verify client data
+        if (validateCommand(data)) {
+            // data was valid, store it using an error callback
+            storage.store(data, function(err) {
+                if (err) {
+                    console.log("ERROR: could not store data from %s", userAgent);
+                    console.log("       " + JSON.stringify(err));
+                    console.log("       " + JSON.stringify(data));
+           
+                    // do not talk to client if it generates more than 5 write errors
+                    writeErrors++;
+                    if (writeErrors > 5) {
+                        socket.emit('server error', {ERROR: "too many server write errors generated"});
+                        socket.disconnect();
+                    }
+                }
+            });
+        } else {
+            // data was not valid.  notify client and disconnect
+            console.log("ERROR: bad data received from %s", userAgent);
+            console.log("       %s", JSON.stringify(data));
+            socket.emit("server error", {ERROR: "invalid data sent to server"});
+            socket.disconnect();
+        }
+       
         // increment seed counter and emit subsequent generate command
         // append current time in millis
         currSeed = data.seed + 1;
@@ -66,6 +84,7 @@ ioSrv.on('connection', function (socket) {
         console.log('ERROR from %s:', userAgent);
         console.log('    ' + JSON.stringify(err));
     });
+    // change to client error here and in public/comms.js
     socket.on('stateHash error', function(err) {
         console.log('ERROR from %s:', userAgent);
         console.log('    ' + JSON.stringify(err));
