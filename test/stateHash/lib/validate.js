@@ -1,3 +1,4 @@
+var should = require('should');
 
 /**
  * returns true if packet parameter contains all expected data fields, and
@@ -26,9 +27,91 @@
  * @param {object} incoming client packet to validate
  * @return {boolean} whether or not the pac
  */
-var validate = function (packet)
+var validate = function (packet, fn)
 {
-    return true;
+    try {
+        // verify type of packet
+        packet.should.be.type('object');
+
+        // verify existence, type, and validity of each field in sample order
+
+        packet.should.have.property('size');
+        packet.size.should.be.a.Number;
+        packet.size.should.equal(parseInt(packet.size));
+
+        packet.should.have.property('seed');
+        packet.seed.should.be.a.Number;
+        packet.seed.should.be.above(-1);
+        packet.seed.should.equal(parseInt(packet.seed));
+
+        packet.should.have.property('sent');
+        packet.sent.should.be.a.Number;
+        packet.sent.should.be.above(-1);
+        packet.sent.should.equal(parseInt(packet.sent));
+
+        packet.should.have.property('time_generation');
+        packet.time_generation.should.be.a.Number;
+        packet.time_generation.should.be.above(-1);
+        packet.time_generation.should.equal(parseInt(packet.time_generation));
+
+        packet.should.have.property('time_serialization');
+        packet.time_serialization.should.be.a.Number;
+        packet.time_serialization.should.be.above(-1);
+        packet.time_serialization.should.equal(parseInt(packet.time_serialization));
+
+        packet.should.have.property('object');
+        packet.object.should.be.a.String;
+        (function(){JSON.parse(packet.object);}).should.not.throw();
+
+        packet.should.have.property('time_hashing_djb2');
+        packet.time_hashing_djb2.should.be.a.Number;
+        packet.time_hashing_djb2.should.be.above(-1);
+        packet.time_hashing_djb2.should.equal(parseInt(packet.time_hashing_djb2));
+
+        packet.should.have.property('hash_djb2');
+        packet.hash_djb2.should.be.a.Number;
+        packet.hash_djb2.should.equal(parseInt(packet.hash_djb2));
+
+        packet.should.have.property('time_hashing_sdbm');
+        packet.time_hashing_sdbm.should.be.a.Number;
+        packet.time_hashing_sdbm.should.be.above(-1);
+        packet.time_hashing_sdbm.should.equal(parseInt(packet.time_hashing_sdbm));
+
+        packet.should.have.property('hash_sdbm');
+        packet.hash_sdbm.should.be.a.Number;
+        packet.hash_sdbm.should.equal(parseInt(packet.hash_sdbm));
+
+        packet.should.have.property('time_hashing_javaHashCode');
+        packet.time_hashing_javaHashCode.should.be.a.Number;
+        packet.time_hashing_javaHashCode.should.be.above(-1);
+        packet.time_hashing_javaHashCode.should.equal(parseInt(packet.time_hashing_javaHashCode));
+
+        packet.should.have.property('hash_javaHashCode');
+        packet.hash_javaHashCode.should.be.a.Number;
+        packet.hash_javaHashCode.should.equal(parseInt(packet.hash_javaHashCode));
+
+        packet.should.have.property('time_hashing_crc32');
+        packet.time_hashing_crc32.should.be.a.Number;
+        packet.time_hashing_crc32.should.be.above(-1);
+        packet.time_hashing_crc32.should.equal(parseInt(packet.time_hashing_crc32));
+
+        packet.should.have.property('hash_crc32');
+        packet.hash_crc32.should.be.a.Number;
+        packet.hash_crc32.should.equal(parseInt(packet.hash_crc32));
+
+        packet.should.have.property('rtt');
+        packet.rtt.should.be.a.Number;
+        packet.rtt.should.be.above(-1);
+        packet.rtt.should.equal(parseInt(packet.rtt));
+
+        // no assertion wrong, callback with no error
+        fn(null);
+        
+    } catch (err) {
+        
+        // assertion error caught, callback with the error
+        fn(err);
+    }
 };
 
 module.exports = validate;

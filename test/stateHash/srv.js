@@ -44,29 +44,41 @@ ioSrv.on('connection', function (socket) {
         fn();
 
         // verify client data
-        if (validateCommand(data)) {
-            // data was valid, store it using an error callback
-            storage.store(data, function(err) {
-                if (err) {
-                    console.log("ERROR: could not store data from %s", userAgent);
-                    console.log("       " + JSON.stringify(err));
-                    console.log("       " + JSON.stringify(data));
-           
-                    // do not talk to client if it generates more than 5 write errors
-                    writeErrors++;
-                    if (writeErrors > 5) {
-                        socket.emit('server error', {ERROR: "too many server write errors generated"});
-                        socket.disconnect();
+        validateCommand(data, function(err) {
+            if (err) {
+                // data was not valid.  notify client and disconnect
+                console.log("ERROR: bad data received from %s", userAgent);
+                console.log("");
+                console.log("       %s", JSON.stringify(data));
+                console.log("");
+                console.log("       %s", JSON.stringify(err));
+
+                socket.emit("server error", {ERROR: "invalid data sent to server"});
+                socket.disconnect();
+            } else {
+
+                var time_writing = Date.now();
+
+                // data was valid, store it using an error callback
+                storage.store(data, function(err) {
+                    if (err) {
+                        console.log("ERROR: could not store data from %s", userAgent);
+                        console.log("       " + JSON.stringify(err));
+                        console.log("       " + JSON.stringify(data));
+               
+                        // do not talk to client if it generates more than 5 write errors
+                        writeErrors++;
+                        if (writeErrors > 5) {
+                            socket.emit('server error', {ERROR: "too many server write errors generated"});
+                            socket.disconnect();
+                        }
                     }
-                }
-            });
-        } else {
-            // data was not valid.  notify client and disconnect
-            console.log("ERROR: bad data received from %s", userAgent);
-            console.log("       %s", JSON.stringify(data));
-            socket.emit("server error", {ERROR: "invalid data sent to server"});
-            socket.disconnect();
-        }
+
+                    time_writing = Date.now() - time_writing;
+                    //TODO write event emitter to give # connected and write avg/slowest stats
+                });
+            }
+        });
        
         // increment seed counter and emit subsequent generate command
         // append current time in millis
