@@ -6,7 +6,8 @@
     "express": "~4.0.0",
     "morgan": "~1.0.0",
     "socket.io": "~1.0.0",
-    "underscore": ""
+    "underscore": "",
+    "should": ""
   },
   "devDependencies": {},
   "optionalDependencies": {},
