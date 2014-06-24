@@ -33,6 +33,8 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 <!-- -->
 
 - find fastest, most cross-browser reliable game state hash algorithm
+    - figure out how to store and retrieve UTF-8 JSON in postgres
+    - design schema for client hash reports
 
 <!-- -->
 
