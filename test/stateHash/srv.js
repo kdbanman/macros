@@ -38,7 +38,7 @@ ioSrv.on('connection', function (socket) {
     socket.on('result', function (data, fn) {
 
         // append round trip millis
-        data.rtt = Date.now() - data.sent;
+        if (typeof data.sent === 'number') data.rtt = Date.now() - data.sent;
         
         // call client callback to notify receipt
         fn();
