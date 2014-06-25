@@ -36,14 +36,7 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
     - figure out how to store and retrieve UTF-8 JSON in postgres
         - scan CH 7 for JSON queryability as per logan
     - design schema for client hash reports
-        - what are the unique things and how are they related?
-        - seed id is master unique thing
-            - hashes table primary key(seed id, hash1, hash2, hash3, hash4)?
-            - table for each hash?
-        - timing table referencing hashes, record each timing report
-        - should enable (eventual) equality verification of all reported serializations
-            - serializations table referencing hashes table
-        - one table with a uid for each client report?
+        - each write gets a row. no uniqueness constraints. add user agent and write time to packet.
 
 <!-- -->
 
