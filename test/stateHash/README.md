@@ -1,5 +1,10 @@
 # stateHash
 
+Notes:
+
+- postgresql must be listening on /tmp/.s.PGSQL.5432
+- init.sql will drop and create a table called stateHash
+
 single page client-server application using a mersenne twister and socket.io to test javascript hashcode libraries.
 
 from the server:
