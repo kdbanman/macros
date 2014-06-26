@@ -1,6 +1,8 @@
-DROP SEQUENCE IF EXISTS report_sequence;
-CREATE SEQUENCE report_sequence;
+
 DROP TABLE IF EXISTS reports;
+DROP SEQUENCE IF EXISTS report_sequence;
+
+CREATE SEQUENCE report_sequence;
 CREATE TABLE reports (
     report_id INT4 DEFAULT nextval('report_sequence') NOT NULL,
     size integer NOT NULL,
