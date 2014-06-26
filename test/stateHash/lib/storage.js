@@ -69,7 +69,7 @@ storage.store = function (data, fn)
                                data.rtt,
                                data.user_agent,
                                data.connected_clients,
-                               data.time_writing];
+                               null];
 
             var preparedQuery = {name: queryName,
                                  text: queryText,
