@@ -2,6 +2,13 @@ var pg = require('pg');
 
 var storage = {};
 
+var connectionConf = {
+    host: '/tmp',
+    port: 5432,
+    user: 'ec2-user',
+    database: 'stateHash'
+};
+
 var queryName = "insert report";
 var queryText = "INSERT INTO reports (" +
                     "size, " +
@@ -34,7 +41,7 @@ storage.store = function (data, fn)
     //TODO move validation call and error handling here
     
     // connect to postgres server
-    pg.connect("/tmp/.s.PGSQL.5432 stateHash", function(error, client, done) {
+    pg.connect(connectionConf, function(error, client, done) {
         if (error) {
             // handle db connection error by calling callback
             fn(error);
