@@ -19,7 +19,8 @@ CREATE TABLE reports (
     hash_crc32 integer NOT NULL,
     rtt integer NOT NULL,
     user_agent text,
-    time_writing integer
+    time_writing integer,
+    PRIMARY KEY (report_id)
 );
 
 /*
