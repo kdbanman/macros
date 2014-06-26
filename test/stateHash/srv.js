@@ -48,7 +48,7 @@ ioSrv.on('connection', function (socket) {
         data.connected_clients = ioSrv.sockets.sockets.length;
         
         // call client callback to notify receipt
-        fn();
+        if (typeof fn === 'function') fn();
 
         // verify client data
         validateCommand(data, currSeed, function(err) {
@@ -86,7 +86,8 @@ ioSrv.on('connection', function (socket) {
        
         // increment seed counter and emit subsequent generate command
         // append current time in millis
-        currSeed = data.seed + 1;
+        if (typeof data.seed === "number") currSeed = data.seed + 1;
+        else currSeed = currSeed + 1;
         socket.emit('generate', _.extend(genCommand(currSeed), {sent: Date.now()}));
     });
 
