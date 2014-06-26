@@ -55,10 +55,8 @@ ioSrv.on('connection', function (socket) {
             if (err) {
                 // data was not valid.  notify client and disconnect
                 console.log("ERROR: bad data received from %s", userAgent);
-                console.log("");
-                console.log("       %s", JSON.stringify(data));
-                console.log("");
-                console.log("       %s", err);
+                console.log("       " + JSON.stringify(data));
+                console.log("       " + err);
 
                 socket.emit("server error", {ERROR: "invalid data sent to server"});
                 socket.disconnect();
