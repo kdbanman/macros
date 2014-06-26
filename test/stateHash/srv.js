@@ -44,8 +44,8 @@ ioSrv.on('connection', function (socket) {
         // append the user agent
         data.user_agent = userAgent;
 
-        //TODO get number of connected clients
-        //data.connected_clients = ...;
+        //get number of connected clients
+        data.connected_clients = ioSrv.sockets.sockets.length;
         
         // call client callback to notify receipt
         fn();
