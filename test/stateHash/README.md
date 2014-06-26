@@ -1,9 +1,14 @@
 # stateHash
 
-Notes:
+notes:
 
 - postgresql must be listening on /tmp/.s.PGSQL.5432
 - init.sql will drop and create a table called reports to a database called stateHash
+
+start/stop server:
+
+    forever start -a -l forever.log -o out.log -e err.log srv.js
+    forever stop srv.js
 
 single page client-server application using a mersenne twister and socket.io to test javascript hashcode libraries.
 
