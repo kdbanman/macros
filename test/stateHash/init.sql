@@ -7,7 +7,7 @@ CREATE TABLE reports (
     seed integer NOT NULL,
     sent integer NOT NULL,
     time_generation integer NOT NULL,
-    time_serialization: integer NOT NULL,
+    time_serialization integer NOT NULL,
     object json NOT NULL,
     time_hashing_djb2 integer NOT NULL,
     hash_djb2 integer NOT NULL,
