@@ -58,7 +58,7 @@ ioSrv.on('connection', function (socket) {
                 console.log("");
                 console.log("       %s", JSON.stringify(data));
                 console.log("");
-                console.log("       %s", JSON.stringify(err));
+                console.log("       %s", err);
 
                 socket.emit("server error", {ERROR: "invalid data sent to server"});
                 socket.disconnect();
@@ -68,8 +68,8 @@ ioSrv.on('connection', function (socket) {
                 storage.store(data, function(err) {
                     if (err) {
                         console.log("ERROR: could not store data from %s", userAgent);
-                        console.log("       " + JSON.stringify(err));
                         console.log("       " + JSON.stringify(data));
+                        console.log("       " + err);
                
                         // do not talk to client if it generates more than 5 write errors
                         writeErrors++;
