@@ -10,7 +10,7 @@ var processCommand = function (command) {
     var setGeneratingView = new Promise(function (resolve, reject) {
         // change status
         var statusStr = 'GENERATING OBJECT SIZE ' + command.size;
-        $('#status').html(statusStr);
+        $('.status').html(statusStr);
 
         // add old class from hashcodes and object
         $('#djb2').addClass('old');
@@ -31,7 +31,7 @@ var processCommand = function (command) {
     };
 
     var setSerializingView = function (generated) {
-        $('#status').html('SERIALIZING OBJECT');
+        $('.status').html('SERIALIZING OBJECT');
         return generated;
     };
 
@@ -48,7 +48,7 @@ var processCommand = function (command) {
     };
 
     var setHashingView = function (generated) {
-        $('#status').html('HASHING OBJECT');
+        $('.status').html('HASHING OBJECT');
         return generated;
     };
 
@@ -88,10 +88,10 @@ socket.on('generate', function (command) {
     processCommand(command).then(function (results) {
 
         // report to server
-        $('#status').html('REPORTING TO SERVER');
+        $('.status').html('REPORTING TO SERVER');
 
         socket.emit('result', results, function () {
-            if (socket.waiting) $('#status').html('WAITING ON SERVER');
+            if (socket.waiting) $('.status').html('WAITING ON SERVER');
         });
 
         // set socket to waiting 
@@ -107,7 +107,7 @@ var reportError = function (err)
 {
     socket.waiting = false;
     socket.error = true;
-    $('#error').removeClass('invisible').html(JSON.stringify(err));
+    $('.error').removeClass('invisible').html(JSON.stringify(err));
     console.log(err);
 };
 
