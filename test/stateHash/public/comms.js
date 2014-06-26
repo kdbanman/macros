@@ -1,6 +1,5 @@
 var socket = io(window.location.origin);
 socket.waiting = true;
-socket.error = false;
 
 var processCommand = function (command) {
     
@@ -106,8 +105,12 @@ socket.on('generate', function (command) {
 var reportError = function (err)
 {
     socket.waiting = false;
-    socket.error = true;
-    $('.error').removeClass('invisible').html(JSON.stringify(err));
+    $('.error').removeClass('invisible');
+
+    var $li = $('<li></li>');
+    $li.text(JSON.stringify(err));
+
+    $('.errorlist').append($li);
     console.log(err);
 };
 
