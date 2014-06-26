@@ -72,7 +72,7 @@ ioSrv.on('connection', function (socket) {
                         // do not talk to client if it generates more than 5 write errors
                         writeErrors++;
                         if (writeErrors > 5) {
-                            socket.emit('server error', {ERROR: "too many server write errors generated"});
+                            socket.emit("server error", {ERROR: "too many server write errors generated"});
                             socket.disconnect();
                         }
                     }
