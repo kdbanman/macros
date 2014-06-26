@@ -29,7 +29,7 @@ var should = require('should');
  * @param {object} incoming client packet to validate
  * @return {boolean} whether or not the pac
  */
-var validate = function (packet, fn)
+var validate = function (packet, currSeed, fn)
 {
     try {
         // verify type of packet
@@ -45,6 +45,7 @@ var validate = function (packet, fn)
         packet.seed.should.be.a.Number;
         packet.seed.should.be.above(-1);
         packet.seed.should.equal(parseInt(packet.seed));
+        packet.seed.should.equal(currSeed);
 
         packet.should.have.property('sent');
         packet.sent.should.be.a.Number;

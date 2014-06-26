@@ -51,7 +51,7 @@ ioSrv.on('connection', function (socket) {
         fn();
 
         // verify client data
-        validateCommand(data, function(err) {
+        validateCommand(data, currSeed, function(err) {
             if (err) {
                 // data was not valid.  notify client and disconnect
                 console.log("ERROR: bad data received from %s", userAgent);
