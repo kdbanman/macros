@@ -9,8 +9,8 @@ var connectionConf = {
     database: 'stateHash'
 };
 
-var queryName = "insert report";
-var queryText = "INSERT INTO reports (" +
+var insertName = "insert report";
+var insertText = "INSERT INTO reports (" +
                     "size, " +
                     "seed, " +
                     "sent, " +
@@ -34,6 +34,40 @@ var queryText = "INSERT INTO reports (" +
                     "$10,$11,$12,$13,$14,$15,$16,$17, NULL" +
                 ") RETURNING report_id;";
 
+var updateName = "update report";
+var updateText = "UPDATE reports SET time_writing = $1 WHERE report_id = $2";
+
+var handleInsert = function (error, results, time_writing, done, fn) {
+    if (error) {
+        // handle insertion error
+        fn(error);
+
+        // truthy passed to done removes client from connection pool
+        done(true);
+    } else {
+        // use results.rows to get the report_id
+        var id = results.rows[0].report_id;
+
+        // save time_writing to report_id.
+        time_writing = Date.now() - time_writing;
+
+        var preparedUpdate = {name: updateName,
+                              text: updateText,
+                              values: [time_writing, id]};
+
+        // update report
+        client.query(preparedUpdate, function (error) {
+            if (error) {
+                fn(error);
+                done(true);
+            } 
+        });
+
+        // return client to connection pool
+        done();
+    }
+}
+
 storage.store = function (data, fn)
 {
     var time_writing = Date.now();
@@ -52,7 +86,7 @@ storage.store = function (data, fn)
             
             // store everything but the (undetermined) time_writing in the 
             // "reports" table
-            var queryValues = [data.size,
+            var insertValues = [data.size,
                                data.seed,
                                data.sent,
                                data.time_generation,
@@ -70,27 +104,12 @@ storage.store = function (data, fn)
                                data.user_agent,
                                data.connected_clients];
 
-            var preparedQuery = {name: queryName,
-                                 text: queryText,
-                                 values: queryValues};
+            var preparedInsert = {name: insertName,
+                                 text: insertText,
+                                 values: insertValues};
 
-            client.query(preparedQuery, function(error, results) {
-                if (error) {
-                    // handle insertion error
-                    fn(error);
-
-                    // truthy passed to done removes client from connection pool
-                    done(true);
-                } else {
-                    // TODO use results.rows to get the report_id
-                    //console.log("DEBUG");
-                    //console.log(JSON.stringify(results.rows);
-                    // TODO save time_writing to report_id
-                    time_writing = Date.now() - time_writing;
-
-                    // return client to connection pool
-                    done();
-                }
+            client.query(preparedInsert, function(error, results) {
+                handleInsert(error, results, time_writing, done, fn);
             });
         }
     });
