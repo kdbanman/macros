@@ -68,8 +68,7 @@ storage.store = function (data, fn)
                                data.hash_crc32,
                                data.rtt,
                                data.user_agent,
-                               data.connected_clients,
-                               null];
+                               data.connected_clients];
 
             var preparedQuery = {name: queryName,
                                  text: queryText,
