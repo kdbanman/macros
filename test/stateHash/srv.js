@@ -23,6 +23,7 @@ ioSrv.on('connection', function (socket) {
     
     // get identification info from socket request
     var userAgent = socket.request.headers['user-agent'];
+    userAgent = typeof userAgent === 'string' ? userAgent : "AGENT UNSPECIFIED";
     console.log('Connection from %s', userAgent);
     
     // initialize seed counter
@@ -39,6 +40,12 @@ ioSrv.on('connection', function (socket) {
 
         // append round trip millis
         if (typeof data.sent === 'number') data.rtt = Date.now() - data.sent;
+
+        // append the user agent
+        data.user_agent = userAgent;
+
+        //TODO get number of connected clients
+        //data.connected_clients = ...;
         
         // call client callback to notify receipt
         fn();

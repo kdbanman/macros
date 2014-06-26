@@ -22,7 +22,9 @@ var should = require('should');
  *   hash_javaHashCode: 654439761,
  *   time_hashing_crc32: 5,
  *   hash_crc32: 3373306475,
- *   rtt: 18 }
+ *   rtt: 18,
+ *   user_agent: 'Mozilla something something',
+ *   connected_clients: 1}
  *
  * @param {object} incoming client packet to validate
  * @return {boolean} whether or not the pac
@@ -100,6 +102,14 @@ var validate = function (packet, fn)
         packet.hash_crc32.should.equal(parseInt(packet.hash_crc32));
 
         packet.should.have.property('rtt');
+        packet.rtt.should.be.a.Number;
+        packet.rtt.should.be.above(-1);
+        packet.rtt.should.equal(parseInt(packet.rtt));
+
+        packet.should.have.property('user_agent');
+        packet.object.should.be.a.String;
+
+        packet.should.have.property('connected_clients');
         packet.rtt.should.be.a.Number;
         packet.rtt.should.be.above(-1);
         packet.rtt.should.equal(parseInt(packet.rtt));

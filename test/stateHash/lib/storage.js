@@ -20,10 +20,12 @@ var queryText = "INSERT INTO reports (" +
                     "hash_crc32, " +
                     "rtt, " +
                     "user_agent, " +
-                    "time_writing) " +
-                "VALUES " +
-                "($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) "+
-                "RETURNING report_id;";
+                    "connected_clients, " +
+                    "time_writing" +
+                ") VALUES (" +
+                    "$1,$2,$3,$4,$5,$6,$7,$8,$9," + 
+                    "$10,$11,$12,$13,$14,$15,$16,$17,$18" +
+                ") RETURNING report_id;";
 
 storage.store = function (data, fn)
 {
