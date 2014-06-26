@@ -71,7 +71,7 @@ storage.store = function (data, fn)
                                data.connected_clients,
                                data.time_writing];
 
-            var preparedQuery = {name: queryname,
+            var preparedQuery = {name: queryName,
                                  text: queryText,
                                  values: queryValues};
 
