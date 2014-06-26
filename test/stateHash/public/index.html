@@ -25,6 +25,12 @@
             .old {
               color: #d8d8d8; }
 
+            .invisible {
+              display: none; }
+
+            #error {
+              color: #aa3333; }
+
             code, tt {
               margin: 0 2px;
               padding: 0 5px;
@@ -73,6 +79,7 @@
         <p>Visits from desktops, tablets, and phones help too!  Like I said, though, <i>don't do it for long if your battery or network bandwidth are limited!</i></p>
         <p>Did something weird/bad happen?  <a href="mailto:kirby.banman@gmail.com">Tell me if you feel like it.</a></p>
         <p>Status: <code><span id="status">WAITING ON SERVER</span></code></p>
+        <div><code><span class="invisible" id="error">WAITING ON SERVER</span></code></div>
         <p>Hashcodes:</p>
         <pre><code>djb2:          <span id="djb2"></span>
 sdbm:          <span id="sdbm"></span>

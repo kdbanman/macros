@@ -81,35 +81,33 @@ var processCommand = function (command) {
 
 socket.on('generate', function (command) {
 
-    if (!socket.error) {
-        // set socket waiting state
-        socket.waiting = false;
-        
-        // call master process
-        processCommand(command).then(function (results) {
+    // set socket waiting state
+    socket.waiting = false;
+    
+    // call master process
+    processCommand(command).then(function (results) {
 
-            // report to server
-            $('#status').html('REPORTING TO SERVER');
+        // report to server
+        $('#status').html('REPORTING TO SERVER');
 
-            socket.emit('result', results, function () {
-                if (socket.waiting) $('#status').html('WAITING ON SERVER');
-            });
-
-            // set socket to waiting 
-            socket.waiting = true;
-
-        }, function (error) {
-            socket.emit('hashState error', error);
-            reportError(error);
+        socket.emit('result', results, function () {
+            if (socket.waiting) $('#status').html('WAITING ON SERVER');
         });
-    }
+
+        // set socket to waiting 
+        socket.waiting = true;
+
+    }, function (error) {
+        socket.emit('hashState error', error);
+        reportError(error);
+    });
 });
 
 var reportError = function (err)
 {
     socket.waiting = false;
     socket.error = true;
-    $('#status').html(JSON.stringify(err));
+    $('#error').removeClass('invisible').html(JSON.stringify(err));
     console.log(err);
 };
 
