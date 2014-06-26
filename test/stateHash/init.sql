@@ -27,7 +27,7 @@ CREATE TABLE reports (
 intended retrieval for followup time_writing addition:
 ------------------------------------------------------
 
-INSERT INTO stateHash (size, seed, sent, ...)
+INSERT INTO reports (size, seed, sent, ...)
 VALUES (3, 3, 1403316622207, ...)
 RETURNING report_id;
 
@@ -38,7 +38,7 @@ with node-postgres:
 var pg = require("pg");
 
 var queryName = "insert report";
-var queryText = "INSERT INTO stateHash (size, seed, sent, ...) " +
+var queryText = "INSERT INTO reports (size, seed, sent, ...) " +
                 "VALUES ($1, $2, $3, ...) " +
                 "RETURNING report_id;";
 
