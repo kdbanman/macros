@@ -30,7 +30,7 @@ ioSrv.on('connection', function (socket) {
     var currSeed = 1;
 
     // count write errors caused by this client
-    var writeErrors = 0;
+    var errors = 0;
 
     // emit initial generate command, appendng current time in millis
     socket.emit('generate', _.extend(genCommand(currSeed), {sent: Date.now()}));
@@ -58,8 +58,12 @@ ioSrv.on('connection', function (socket) {
                 console.log("       " + JSON.stringify(data));
                 console.log("       " + err);
 
-                socket.emit("server error", {ERROR: "invalid data sent to server"});
-                socket.disconnect();
+                // do not talk to client if it generates > 5 errors
+                errors++;
+                if (errors > 5) {
+                    socket.emit("server error", {ERROR: "invalid data sent to server"});
+                    socket.disconnect();
+                }
             } else {
 
                 // data was valid, store it using an error callback
@@ -69,9 +73,9 @@ ioSrv.on('connection', function (socket) {
                         console.log("       " + JSON.stringify(data));
                         console.log("       " + err);
                
-                        // do not talk to client if it generates more than 5 write errors
-                        writeErrors++;
-                        if (writeErrors > 5) {
+                        // do not talk to client if it generates > 5 errors
+                        errors++;
+                        if (errors > 5) {
                             socket.emit("server error", {ERROR: "too many server write errors generated"});
                             socket.disconnect();
                         }
