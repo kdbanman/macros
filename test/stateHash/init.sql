@@ -1,3 +1,4 @@
+-- TODO: CREATEDB stateHash
 
 DROP TABLE IF EXISTS reports;
 DROP SEQUENCE IF EXISTS report_sequence;
