@@ -32,16 +32,6 @@ A centralized controller for a cluster of Gameroom servers could be designed lat
 
 <!-- -->
 
-- find fastest, most cross-browser reliable game state hash algorithm
-    - run init.sql
-    - in storage.js, init.sql (CREATE and intended comments), add connected clients count
-        - data.connected_clients = ... RIGHT after data.rtt in srv.js
-    - implement init.sql example in storage.js
-        - remember time_writing and connected_clients
-        - TEST AND GO:D
-
-<!-- -->
-
 - across all documentation, make sure session ID and client ID are used to refer to server-side *only*, cross-gameroom browser identifier, while player ID and player number are used for gameroom specific id tasks
     - the former should not be exposed client side for security reasons
     - the latter is used server and client-side
