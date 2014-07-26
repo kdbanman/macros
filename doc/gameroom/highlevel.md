@@ -14,34 +14,37 @@ The server-side gamerooms have minimal responsibilities - they are synchronizati
 They do not run any game code or validate any game commands.
 They have the fewest possible states (those derivable from the communications library protocol that are relevant to multiplayer game synchronization).
 
-Any asynchronous 'setup' phase for different players to join and leave is to be handled BEFORE connecting to a gameroom.
+Any asynchronous 'setup' phase for game 'seed' state is configured is to be handled BEFORE connecting to a gameroom.
 The gamestate hash of the first connected client decides what the other clients must agree with in order to connect.
 Once the number of connected clients is equal to the number of expected players, the game room lock-step cycle begins.
+
+Room states should be queryable as a simple, separate API for any player-facing app that displays games.
+The same player-facing app server is responsible for storing and maintaining game configuration/seed states.
 
 By enforcing full determinism of game state from an initial seed and a set of possible user commands, only command packets need to be shared between clients (and server).
 Only command packets sent by server may modify game state.
 
-No engine code should be run on the server.
+No game app code should be run on the server.
 Divergence/cheating detection is interface-based (ex. checksum of game state done client-side and sent to server as part of packet header).
 Game-specific command conflicts are resolved client-side.
 
 Client commands (empty or not) are gathered at the server, processed, and compiled into a master packet.
 The master packet is broadcast to each waiting client, where it is integrated into the coming iteration. (See separation of communication turns in AoE article)
 
-The game engine and view/controller are responsible for implementing the commands.
+The game app is responsible for implementing the commands.
 The client-side gameroom module is responsible for controlling client game state synchronization and frame draw calls.
 
 ## Requirements
 
 - must handle defaultest browser configurations possible
 - must be tolerant to poor/changing latency
-- must be tolerant of different and changing engine iteration times
+- must be tolerant of different and changing game loop iteration times
 - must be tolerant to dropped or out-of-order packets (see [Two Generals' Problem](http://en.wikipedia.org/wiki/Two_Generals%27_Problem))
-- must *not* be responsible for engine-specific command validation
+- must *not* be responsible for game-app-specific command validation
 - must persistently record all gameroom activity
     - error states and traces are very important (ex. state divergence)
         - on disconnect or exception, dump as much as possible to server
-- must detect and react to client divergence of game engine state
+- must detect and react to client divergence of game state
     - gamestate hashes generated client-side, compared server-side (consensus)
 - must be some means for player to reconnect from disconnection or accidental back button
     - must *not* be responsible for resynchronization of game state (only verification of resync success)
@@ -51,7 +54,7 @@ The client-side gameroom module is responsible for controlling client game state
 
 ## Contracts for Game
 
-- enforces full determinism of engine
+- enforces full determinism of game app
 - enforces player reference and object creation/reference by gameroom supplied ids
 - players joining/leaving (with possible async setup pipelines) must be handled before game room connection
 - enforces game state mutation by player input only through command packets
