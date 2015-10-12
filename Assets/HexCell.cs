@@ -6,17 +6,17 @@ using System;
 namespace HexEngine
 {
     /// <summary>
-    ///     For a single (row, col) coordinate, holds FactionCells for each faction.
+    ///     For a single (row, col) coordinate, holds ColonyCells for each Colony.
     /// </summary>
-    public class HexGridCellContainer
+    public class WorldCell
     {
-        private IList<HexGridCellContainer> _neighbors;
-        private IDictionary<Faction, FactionCell> _factionCells;
+        private IList<WorldCell> _neighbors;
+        private IDictionary<Colony, ColonyCell> _colonyCells;
 
-        public HexGridCellContainer(int row, int col)
+        public WorldCell(int row, int col)
         {
-            _neighbors = new List<HexGridCellContainer>();
-            _factionCells = new Dictionary<Faction, FactionCell>();
+            _neighbors = new List<WorldCell>();
+            _colonyCells = new Dictionary<Colony, ColonyCell>();
 
             Row = row;
             Col = col;
@@ -25,12 +25,12 @@ namespace HexEngine
         public int Row { get; private set; }
         public int Col { get; private set; }
 
-        public void AddNeighbor(HexGridCellContainer neighbor)
+        public void AddNeighbor(WorldCell neighbor)
         {
             _neighbors.Add(neighbor);
         }
 
-        public void AddNeighbors(IEnumerable<HexGridCellContainer> neighbors)
+        public void AddNeighbors(IEnumerable<WorldCell> neighbors)
         {
             foreach (var neighbor in neighbors)
             {
@@ -38,50 +38,50 @@ namespace HexEngine
             }
         }
 
-        public void AddFaction(Faction newFaction)
+        public void AddColony(Colony newColony)
         {
-            _factionCells.Add(newFaction, new FactionCell(newFaction));
+            _colonyCells.Add(newColony, new ColonyCell(newColony));
         }
 
-        public IEnumerable<Faction> Factions { get { return _factionCells.Keys; } }
+        public IEnumerable<Colony> Colonies { get { return _colonyCells.Keys; } }
 
-        public IEnumerable<FactionCell> Cells { get { return _factionCells.Values; } }
+        public IEnumerable<ColonyCell> Cells { get { return _colonyCells.Values; } }
 
-        public void AddCreatureCells(Faction faction, int density)
+        public void AddCreatureCells(Colony colony, int density)
         {
-            _factionCells[faction].CreatureCellDensity += density;
+            _colonyCells[colony].CreatureCellDensity += density;
         }
 
-        public void AddMoveHormone(Faction faction, int density)
+        public void AddMoveHormone(Colony colony, int density)
         {
-            _factionCells[faction].MoveHormoneDensity += density;
+            _colonyCells[colony].MoveHormoneDensity += density;
         }
 
-        public int GetCreatureCellDensity(Faction faction) { return _factionCells[faction].CreatureCellDensity; }
+        public int GetCreatureCellDensity(Colony colony) { return _colonyCells[colony].CreatureCellDensity; }
 
-        public int GetMoveHormoneDensity(Faction faction) { return _factionCells[faction].MoveHormoneDensity; }
+        public int GetMoveHormoneDensity(Colony colony) { return _colonyCells[colony].MoveHormoneDensity; }
 
-        public void MutateToNextGen(HexGridCellContainer previousGenContainer)
+        public void MutateToNextGen(WorldCell previousGenContainer)
         {
-            // There are multiple FactionCells per Faction in this location's HexGridCellContainer
-            foreach (FactionCell cell in _factionCells.Values)
+            // There are multiple ColonyCells per Colony in this location's WorldCell
+            foreach (ColonyCell cell in _colonyCells.Values)
             {
                 // dissipate movement hormone
-                cell.MoveHormoneDensity = previousGenContainer.GetMoveHormoneDensity(cell.Faction) / 2;
+                cell.MoveHormoneDensity = previousGenContainer.GetMoveHormoneDensity(cell.Colony) / 2;
 
                 // TODO What in the fuck was I doing in JavaScript?
             }
         }
     }
 
-    public class FactionCell
+    public class ColonyCell
     {
-        public FactionCell(Faction faction)
+        public ColonyCell(Colony colony)
         {
-            Faction = faction;
+            Colony = colony;
         }
 
-        public Faction Faction { get; private set; }
+        public Colony Colony { get; private set; }
 
         public int MoveHormoneDensity { get; set; }
 

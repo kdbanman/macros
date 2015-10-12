@@ -14,28 +14,28 @@ namespace NUnitTests
     public class HexWorldTests
     {
         private HexWorld _worldModel;
-        private Faction _testFaction;
+        private Colony _testColony;
         private int width = 50;
         private int height = 33;
 
         [SetUp]
         public void SetUp()
         {
-            _testFaction = new Faction(0, "test faction");
+            _testColony = new Colony(0, "test colony");
 
             _worldModel = new HexWorld(width, height);
 
             // test dummy data
-            _worldModel.AddFaction(_testFaction);
+            _worldModel.AddColony(_testColony);
 
-            _worldModel.AddCreatureCells(_testFaction, new Coord(1, 1), 30);
-            _worldModel.AddCreatureCells(_testFaction, new Coord(0, 0), 10);
-            _worldModel.AddCreatureCells(_testFaction, new Coord(2, 2), 40);
-            _worldModel.AddCreatureCells(_testFaction, new Coord(3, 3), 30);
+            _worldModel.AddCreatureCells(_testColony, new Coord(1, 1), 30);
+            _worldModel.AddCreatureCells(_testColony, new Coord(0, 0), 10);
+            _worldModel.AddCreatureCells(_testColony, new Coord(2, 2), 40);
+            _worldModel.AddCreatureCells(_testColony, new Coord(3, 3), 30);
 
-            _worldModel.AddMoveHormone(_testFaction, new Coord(1, 1), 3);
-            _worldModel.AddMoveHormone(_testFaction, new Coord(1, 0), 5);
-            _worldModel.AddMoveHormone(_testFaction, new Coord(2, 0), 35);
+            _worldModel.AddMoveHormone(_testColony, new Coord(1, 1), 3);
+            _worldModel.AddMoveHormone(_testColony, new Coord(1, 0), 5);
+            _worldModel.AddMoveHormone(_testColony, new Coord(2, 0), 35);
             // end dummy data
         }
 

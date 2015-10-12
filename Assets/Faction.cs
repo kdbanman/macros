@@ -4,15 +4,15 @@ using System.Collections;
 
 namespace HexEngine
 {
-    public class Faction
+    public class Colony
     {
-        public Faction(int id, string name)
+        public Colony(int id, string name)
         {
-            FactionID = id;
+            ColonyID = id;
             Name = name;
         }
 
-        public int FactionID { get; private set; }
+        public int ColonyID { get; private set; }
         public string Name { get; private set; }
     } 
 }

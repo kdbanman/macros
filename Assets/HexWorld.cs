@@ -16,8 +16,8 @@ namespace HexEngine
     /// </summary>
     public class HexWorld
     {
-        HexGridCellContainer[,] _currentCells, _nextCells;
-        List<Faction> _factions;
+        WorldCell[,] _currentCells, _nextCells;
+        List<Colony> _colony;
 
         #region initialization
 
@@ -31,14 +31,14 @@ namespace HexEngine
             RowCount = rows;
             ColCount = cols;
 
-            _currentCells = new HexGridCellContainer[rows, cols];
-            _nextCells = new HexGridCellContainer[rows, cols];
+            _currentCells = new WorldCell[rows, cols];
+            _nextCells = new WorldCell[rows, cols];
 
             // initialize cell containers
             ForEachPosition((row, col) =>
             {
-                _currentCells[row, col] = new HexGridCellContainer(row, col);
-                _nextCells[row, col] = new HexGridCellContainer(row, col);
+                _currentCells[row, col] = new WorldCell(row, col);
+                _nextCells[row, col] = new WorldCell(row, col);
             });
 
             // add neighbors to each container
@@ -50,7 +50,7 @@ namespace HexEngine
                 next.AddNeighbors(neighborPositions.Select((nbrPos) => GetNextCell(nbrPos)));
             });
 
-            _factions = new List<Faction>();
+            _colony = new List<Colony>();
         }
 
         #endregion
@@ -64,14 +64,14 @@ namespace HexEngine
 
         #region methods
 
-        public void AddCreatureCells(Faction faction, Coord position, int density)
+        public void AddCreatureCells(Colony colony, Coord position, int density)
         {
-            _currentCells[position.Row, position.Col].AddCreatureCells(faction, density);
+            _currentCells[position.Row, position.Col].AddCreatureCells(colony, density);
         }
 
-        public void AddMoveHormone(Faction faction, Coord position, int density)
+        public void AddMoveHormone(Colony colony, Coord position, int density)
         {
-            _currentCells[position.Row, position.Col].AddMoveHormone(faction, density);
+            _currentCells[position.Row, position.Col].AddMoveHormone(colony, density);
         }
 
         public void Evolve()
@@ -83,32 +83,32 @@ namespace HexEngine
             _nextCells = tmp;
         }
 
-        public void AddFaction(Faction newFaction)
+        public void AddColony(Colony newColony)
         {
-            _factions.Add(newFaction);
+            _colony.Add(newColony);
 
             ForEachCell((current, next) =>
             {
-                current.AddFaction(newFaction);
-                next.AddFaction(newFaction);
+                current.AddColony(newColony);
+                next.AddColony(newColony);
             });
         }
 
-        private HexGridCellContainer GetCurrentCell(Coord position) { return _currentCells[position.Row, position.Col]; }
-        private HexGridCellContainer GetNextCell(Coord position) { return _nextCells[position.Row, position.Col]; }
+        private WorldCell GetCurrentCell(Coord position) { return _currentCells[position.Row, position.Col]; }
+        private WorldCell GetNextCell(Coord position) { return _nextCells[position.Row, position.Col]; }
 
         #endregion
 
         #region iterators and helpers
 
-        public void ForEachCell(Action<HexGridCellContainer, HexGridCellContainer, Coord> operation)
+        public void ForEachCell(Action<WorldCell, WorldCell, Coord> operation)
         {
             for (int row = 0; row < RowCount; row++)
                 for (int col = 0; col < ColCount; col++)
                     operation(_currentCells[row, col], _nextCells[row, col], new Coord(row, col));
         }
 
-        public void ForEachCell(Action<HexGridCellContainer, HexGridCellContainer> operation)
+        public void ForEachCell(Action<WorldCell, WorldCell> operation)
         {
             for (int row = 0; row < RowCount; row++)
                 for (int col = 0; col < ColCount; col++)
@@ -122,7 +122,7 @@ namespace HexEngine
                     operation(row, col);
         }
 
-        public IEnumerable<HexGridCellContainer> CurrentCells
+        public IEnumerable<WorldCell> CurrentCells
         {
             get
             {
@@ -162,7 +162,7 @@ namespace HexEngine
 
             int maxRow = RowCount - 1;
             int maxCol = ColCount - 1;
-            
+             
             var allPossibleNbrs = new Coord[]
             {
                 new Coord(row, col + 1),        // east

@@ -20,7 +20,7 @@ public class Map : MonoBehaviour
 
     private HexWorld _worldModel;
 
-    private Faction _testFaction;
+    private Colony _testColony;
 
     // Use this for initialization
     void Start()
@@ -30,18 +30,18 @@ public class Map : MonoBehaviour
         _worldModel = new HexWorld(width, height);
 
         // test dummy data
-        _testFaction = new Faction(0, "test faction");
+        _testColony = new Colony(0, "test colony");
 
-        _worldModel.AddFaction(_testFaction);
+        _worldModel.AddColony(_testColony);
         
-        _worldModel.AddCreatureCells(_testFaction, new Coord(1, 1), 30);
-        _worldModel.AddCreatureCells(_testFaction, new Coord(0, 0), 10);
-        _worldModel.AddCreatureCells(_testFaction, new Coord(2, 2), 40);
-        _worldModel.AddCreatureCells(_testFaction, new Coord(3, 3), 30);
+        _worldModel.AddCreatureCells(_testColony, new Coord(1, 1), 30);
+        _worldModel.AddCreatureCells(_testColony, new Coord(0, 0), 10);
+        _worldModel.AddCreatureCells(_testColony, new Coord(2, 2), 40);
+        _worldModel.AddCreatureCells(_testColony, new Coord(3, 3), 30);
 
-        _worldModel.AddMoveHormone(_testFaction, new Coord(1, 1), 3);
-        _worldModel.AddMoveHormone(_testFaction, new Coord(1, 0), 5);
-        _worldModel.AddMoveHormone(_testFaction, new Coord(2, 0), 35);
+        _worldModel.AddMoveHormone(_testColony, new Coord(1, 1), 3);
+        _worldModel.AddMoveHormone(_testColony, new Coord(1, 0), 5);
+        _worldModel.AddMoveHormone(_testColony, new Coord(2, 0), 35);
         // end dummy data
     }
 
@@ -68,15 +68,15 @@ public class Map : MonoBehaviour
         foreach (var cellContainer in _worldModel.CurrentCells)
         {
             Vector2 position = GetPosition(cellContainer.Row, cellContainer.Col);
-            foreach (var factionCell in cellContainer.Cells)
+            foreach (var colonyCell in cellContainer.Cells)
             {
-                if (factionCell.CreatureCellDensity > 0)
+                if (colonyCell.CreatureCellDensity > 0)
                     Gizmos.color = Color.white;
                 else
                     Gizmos.color = Color.black;
                 Gizmos.DrawCube(position, new Vector3(cellSize, cellSize, cellSize * 0.3f));
 
-                if (factionCell.MoveHormoneDensity > 0)
+                if (colonyCell.MoveHormoneDensity > 0)
                     Gizmos.color = Color.green;
                 else
                     Gizmos.color = Color.gray;
