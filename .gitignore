@@ -1,6 +1,16 @@
 
 
 ## 
+## Macros
+## 
+
+# linux/cygwin soft link to the wiki repo
+wiki
+
+# windows shortcut to the wiki repo
+wiki.lnk
+
+## 
 ## Unity 
 ## 
 
