@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 using HexEngine;
+using System;
 
 public class Map : MonoBehaviour
 {
@@ -22,12 +23,34 @@ public class Map : MonoBehaviour
 
     private Colony _testColony;
 
+    // PROTOTYPE: These are just here to render some world cells with shape and color.
+    // Real stuff with particle effects or other wizardry will replace them.
+    private IDictionary<Coord, GameObject> _colonyCubes = new Dictionary<Coord, GameObject>();
+    private IDictionary<Coord, GameObject> _hormoneCubes = new Dictionary<Coord, GameObject>();
+
     // Use this for initialization
     void Start()
     {
         _framesSinceUpdate = 0;
 
         _worldModel = new HexWorld(width, height);
+
+        // add unity objects to each cell
+        _worldModel.ForEachPosition((coord) =>
+        {
+            var cellPosition = GetPosition(coord.Row, coord.Col);
+
+            GameObject colonyCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            colonyCube.transform.localScale = new Vector3(cellSize, cellSize, cellSize * 0.3f);
+            colonyCube.transform.position = cellPosition;
+            
+            GameObject hormoneCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            hormoneCube.transform.localScale = new Vector3(cellSize / 2, cellSize / 2, cellSize);
+            hormoneCube.transform.position = cellPosition;
+
+            _colonyCubes.Add(coord, colonyCube);
+            _hormoneCubes.Add(coord, hormoneCube);
+        });
 
         // test dummy data
         _testColony = new Colony(0, "test colony");
@@ -57,10 +80,12 @@ public class Map : MonoBehaviour
             Debug.Log("Evolving world.");
             _worldModel.Evolve();
             _framesSinceUpdate = 0;
+
+            DrawWorld();
         }
     }
 
-    void OnDrawGizmos()
+    private void DrawWorld()
     {
         if (_worldModel == null)
             return;
@@ -70,17 +95,17 @@ public class Map : MonoBehaviour
             Vector2 position = GetPosition(cellContainer.Row, cellContainer.Col);
             foreach (var colonyCell in cellContainer.Cells)
             {
+                GameObject colonyCube = _colonyCubes[cellContainer.Coord];
                 if (colonyCell.CreatureCellDensity > 0)
-                    Gizmos.color = Color.white;
+                    colonyCube.GetComponent<Renderer>().material.color = Color.white;
                 else
-                    Gizmos.color = Color.black;
-                Gizmos.DrawCube(position, new Vector3(cellSize, cellSize, cellSize * 0.3f));
+                    colonyCube.GetComponent<Renderer>().material.color = Color.black;
 
+                GameObject hormoneCube = _hormoneCubes[cellContainer.Coord];
                 if (colonyCell.MoveHormoneDensity > 0)
-                    Gizmos.color = Color.green;
+                    hormoneCube.GetComponent<Renderer>().material.color = Color.green;
                 else
-                    Gizmos.color = Color.gray;
-                Gizmos.DrawCube(position, new Vector3(cellSize / 2, cellSize / 2, cellSize));
+                    hormoneCube.GetComponent<Renderer>().material.color = Color.gray;
             }
         }
     }

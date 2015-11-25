@@ -47,6 +47,8 @@ namespace HexEngine
 
         public IEnumerable<ColonyCell> Cells { get { return _colonyCells.Values; } }
 
+        public Coord Coord { get { return new Coord(Row, Col); } }
+
         public void AddCreatureCells(Colony colony, int density)
         {
             _colonyCells[colony].CreatureCellDensity += density;

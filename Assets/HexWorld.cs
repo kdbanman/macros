@@ -101,6 +101,12 @@ namespace HexEngine
 
         #region iterators and helpers
 
+        /// <summary>
+        ///     Iterate through all cells in the world.
+        /// </summary>
+        /// <param name="operation">
+        ///     A delegate that takes two world cells and a location - a corresponding current and future pair of cells and their coordinate in the hex grid.
+        /// </param>
         public void ForEachCell(Action<WorldCell, WorldCell, Coord> operation)
         {
             for (int row = 0; row < RowCount; row++)
@@ -108,6 +114,12 @@ namespace HexEngine
                     operation(_currentCells[row, col], _nextCells[row, col], new Coord(row, col));
         }
 
+        /// <summary>
+        ///     Iterate through all cells in the world.
+        /// </summary>
+        /// <param name="operation">
+        ///     A delegate that takes two world cells - a corresponding current and future pair of cells.
+        /// </param>
         public void ForEachCell(Action<WorldCell, WorldCell> operation)
         {
             for (int row = 0; row < RowCount; row++)
@@ -120,6 +132,11 @@ namespace HexEngine
             for (int row = 0; row < RowCount; row++)
                 for (int col = 0; col < ColCount; col++)
                     operation(row, col);
+        }
+
+        public void ForEachPosition(Action<Coord> operation)
+        {
+            ForEachPosition((row, col) => operation(new Coord(row, col)));
         }
 
         public IEnumerable<WorldCell> CurrentCells
@@ -191,12 +208,12 @@ namespace HexEngine
             Col = col;
         }
 
-        public int Row;
-        public int Col;
+        public int Row { get; private set; }
+        public int Col { get; private set; }
 
         public override string ToString()
         {
-            return $"(Row: {Row}, Col: {Col}";
+            return String.Format("(Row: {0}, Col: {1}", Row, Col);
         }
 
         public override bool Equals(object obj)
