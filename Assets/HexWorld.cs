@@ -64,9 +64,9 @@ namespace HexEngine
 
         #region methods
 
-        public void AddCreatureCells(Colony colony, Coord position, int density)
+        public void AddCreatures(Colony colony, Coord position, int density)
         {
-            _currentCells[position.Row, position.Col].AddCreatureCells(colony, density);
+            _currentCells[position.Row, position.Col].AddCreatures(colony, density);
         }
 
         public void AddMoveHormone(Colony colony, Coord position, int density)

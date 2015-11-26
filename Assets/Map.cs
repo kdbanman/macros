@@ -17,6 +17,12 @@ public class Map : MonoBehaviour
     [Range(0.1f, 50)]
     public float cellSize;
 
+    [Range(1, 100)]
+    public int testColonyMaxCreature = 50;
+
+    [Range(1, 100)]
+    public int testColonyMaxHormone = 50;
+
     private int _framesSinceUpdate;
 
     private HexWorld _worldModel;
@@ -25,7 +31,7 @@ public class Map : MonoBehaviour
 
     // PROTOTYPE: These are just here to render some world cells with shape and color.
     // Real stuff with particle effects or other wizardry will replace them.
-    private IDictionary<Coord, GameObject> _colonyCubes = new Dictionary<Coord, GameObject>();
+    private IDictionary<Coord, GameObject> _creatureCubes = new Dictionary<Coord, GameObject>();
     private IDictionary<Coord, GameObject> _hormoneCubes = new Dictionary<Coord, GameObject>();
 
     // Use this for initialization
@@ -40,15 +46,15 @@ public class Map : MonoBehaviour
         {
             var cellPosition = GetPosition(coord.Row, coord.Col);
 
-            GameObject colonyCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            colonyCube.transform.localScale = new Vector3(cellSize, cellSize, cellSize * 0.3f);
-            colonyCube.transform.position = cellPosition;
+            GameObject creatureCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            creatureCube.transform.localScale = new Vector3(cellSize / 2, cellSize / 2, cellSize);
+            creatureCube.transform.position = cellPosition;
             
             GameObject hormoneCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            hormoneCube.transform.localScale = new Vector3(cellSize / 2, cellSize / 2, cellSize);
+            hormoneCube.transform.localScale = new Vector3(cellSize, cellSize, cellSize * 0.3f);
             hormoneCube.transform.position = cellPosition;
 
-            _colonyCubes.Add(coord, colonyCube);
+            _creatureCubes.Add(coord, creatureCube);
             _hormoneCubes.Add(coord, hormoneCube);
         });
 
@@ -57,14 +63,14 @@ public class Map : MonoBehaviour
 
         _worldModel.AddColony(_testColony);
         
-        _worldModel.AddCreatureCells(_testColony, new Coord(1, 1), 30);
-        _worldModel.AddCreatureCells(_testColony, new Coord(0, 0), 10);
-        _worldModel.AddCreatureCells(_testColony, new Coord(2, 2), 40);
-        _worldModel.AddCreatureCells(_testColony, new Coord(3, 3), 30);
+        _worldModel.AddCreatures(_testColony, new Coord(1, 1), 30);
+        _worldModel.AddCreatures(_testColony, new Coord(0, 0), 10);
+        _worldModel.AddCreatures(_testColony, new Coord(2, 2), 40);
+        _worldModel.AddCreatures(_testColony, new Coord(3, 3), 30);
 
-        _worldModel.AddMoveHormone(_testColony, new Coord(1, 1), 3);
-        _worldModel.AddMoveHormone(_testColony, new Coord(1, 0), 5);
-        _worldModel.AddMoveHormone(_testColony, new Coord(2, 0), 35);
+        _worldModel.AddMoveHormone(_testColony, new Coord(1, 1), 430);
+        _worldModel.AddMoveHormone(_testColony, new Coord(1, 0), 500);
+        _worldModel.AddMoveHormone(_testColony, new Coord(2, 0), 350);
         // end dummy data
     }
 
@@ -73,6 +79,9 @@ public class Map : MonoBehaviour
     {
         if (_worldModel == null)
             return;
+
+        _testColony.MaxCreatureDensity = testColonyMaxCreature;
+        _testColony.MaxMoveHormoneDensity = testColonyMaxHormone;
 
         _framesSinceUpdate++;
         if (_framesSinceUpdate > framesPerUpdate)
@@ -95,22 +104,20 @@ public class Map : MonoBehaviour
             Vector2 position = GetPosition(cellContainer.Row, cellContainer.Col);
             foreach (var colonyCell in cellContainer.Cells)
             {
-                GameObject colonyCube = _colonyCubes[cellContainer.Coord];
-                if (colonyCell.CreatureCellDensity > 0)
-                    colonyCube.GetComponent<Renderer>().material.color = Color.white;
-                else
-                    colonyCube.GetComponent<Renderer>().material.color = Color.black;
+                GameObject colonyCube = _creatureCubes[cellContainer.Coord];
+                float creatureRatio = (float)colonyCell.CreatureDensity / (float)colonyCell.Colony.MaxCreatureDensity;
+                Color colonyColor = Color.Lerp(Color.black, Color.white, creatureRatio);
+                colonyCube.GetComponent<Renderer>().material.color = colonyColor;
 
                 GameObject hormoneCube = _hormoneCubes[cellContainer.Coord];
-                if (colonyCell.MoveHormoneDensity > 0)
-                    hormoneCube.GetComponent<Renderer>().material.color = Color.green;
-                else
-                    hormoneCube.GetComponent<Renderer>().material.color = Color.gray;
+                float hormoneRatio = (float)colonyCell.MoveHormoneDensity / (float)colonyCell.Colony.MaxMoveHormoneDensity;
+                Color hormoneColor = Color.Lerp(Color.black, Color.yellow, hormoneRatio);
+                hormoneCube.GetComponent<Renderer>().material.color = hormoneColor;
             }
         }
     }
-    
-    public Vector2 GetPosition(int row, int col)
+
+    private Vector2 GetPosition(int row, int col)
     {
         return new Vector2(col + 0.5f * row, 0.866025404f * row) * cellSize;
     }

@@ -49,9 +49,9 @@ namespace HexEngine
 
         public Coord Coord { get { return new Coord(Row, Col); } }
 
-        public void AddCreatureCells(Colony colony, int density)
+        public void AddCreatures(Colony colony, int density)
         {
-            _colonyCells[colony].CreatureCellDensity += density;
+            _colonyCells[colony].CreatureDensity += density;
         }
 
         public void AddMoveHormone(Colony colony, int density)
@@ -59,7 +59,7 @@ namespace HexEngine
             _colonyCells[colony].MoveHormoneDensity += density;
         }
 
-        public int GetCreatureCellDensity(Colony colony) { return _colonyCells[colony].CreatureCellDensity; }
+        public int GetCreatureDensity(Colony colony) { return _colonyCells[colony].CreatureDensity; }
 
         public int GetMoveHormoneDensity(Colony colony) { return _colonyCells[colony].MoveHormoneDensity; }
 
@@ -87,6 +87,6 @@ namespace HexEngine
 
         public int MoveHormoneDensity { get; set; }
 
-        public int CreatureCellDensity { get; set; }
+        public int CreatureDensity { get; set; }
     } 
 }

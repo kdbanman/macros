@@ -28,10 +28,10 @@ namespace NUnitTests
             // test dummy data
             _worldModel.AddColony(_testColony);
 
-            _worldModel.AddCreatureCells(_testColony, new Coord(1, 1), 30);
-            _worldModel.AddCreatureCells(_testColony, new Coord(0, 0), 10);
-            _worldModel.AddCreatureCells(_testColony, new Coord(2, 2), 40);
-            _worldModel.AddCreatureCells(_testColony, new Coord(3, 3), 30);
+            _worldModel.AddCreatures(_testColony, new Coord(1, 1), 30);
+            _worldModel.AddCreatures(_testColony, new Coord(0, 0), 10);
+            _worldModel.AddCreatures(_testColony, new Coord(2, 2), 40);
+            _worldModel.AddCreatures(_testColony, new Coord(3, 3), 30);
 
             _worldModel.AddMoveHormone(_testColony, new Coord(1, 1), 3);
             _worldModel.AddMoveHormone(_testColony, new Coord(1, 0), 5);

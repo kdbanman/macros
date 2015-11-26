@@ -14,5 +14,8 @@ namespace HexEngine
 
         public int ColonyID { get; private set; }
         public string Name { get; private set; }
+
+        public int MaxMoveHormoneDensity { get; set; }
+        public int MaxCreatureDensity { get; set; }
     } 
 }
