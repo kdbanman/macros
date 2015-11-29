@@ -2,12 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace HexEngine
 {
     /// <summary>
     ///     For a single (row, col) coordinate, holds ColonyCells for each Colony.
     /// </summary>
+    /// <remarks>
+    ///     It feels a bit smelly that the HexWorld, WorldCell, *and* ColonyCells all have fields
+    ///     that depend on Colony.
+    /// </remarks>
     public class WorldCell
     {
         private IList<WorldCell> _neighbors;
@@ -43,9 +48,7 @@ namespace HexEngine
             _colonyCells.Add(newColony, new ColonyCell(newColony));
         }
 
-        public IEnumerable<Colony> Colonies { get { return _colonyCells.Keys; } }
-
-        public IEnumerable<ColonyCell> Cells { get { return _colonyCells.Values; } }
+        public IEnumerable<ColonyCell> ColonyCells { get { return _colonyCells.Values; } }
 
         public Coord Coord { get { return new Coord(Row, Col); } }
 
@@ -63,16 +66,43 @@ namespace HexEngine
 
         public int GetMoveHormoneDensity(Colony colony) { return _colonyCells[colony].MoveHormoneDensity; }
 
-        public void MutateToNextGen(WorldCell previousGenContainer)
+        public void MutateToNextGen(WorldCell previousGenWorldCell)
         {
-            // There are multiple ColonyCells per Colony in this location's WorldCell
             foreach (ColonyCell cell in _colonyCells.Values)
             {
-                // dissipate movement hormone
-                cell.MoveHormoneDensity = previousGenContainer.GetMoveHormoneDensity(cell.Colony) / 2;
-
-                // TODO What in the fuck was I doing in JavaScript?
+                cell.MoveHormoneDensity = ComputeNewHormoneDensity(previousGenWorldCell, cell);
+                cell.CreatureDensity = ComputeNewCreatureDensity(previousGenWorldCell, cell);
             }
+        }
+
+        private int ComputeNewHormoneDensity(WorldCell previousGenWorldCell, ColonyCell cell)
+        {
+            var previousHormoneDensity = previousGenWorldCell.GetMoveHormoneDensity(cell.Colony);
+            // evaporate movement hormone from cell
+            double evaporated = (double)previousHormoneDensity * cell.Colony.HormoneEvaporationRate;
+            // remove movement hormone that will be taken by neighboring cells
+            double dissipated = (double)previousHormoneDensity * cell.Colony.HormoneDissipationRate;
+            // add movement hormone contributed by neighboring cells of the same colony
+            double collected = 0.0;
+            foreach (var neighborCell in _neighbors)
+            {
+                double neighborDissipation = neighborCell.GetMoveHormoneDensity(cell.Colony) * cell.Colony.HormoneDissipationRate;
+                double collectedFromNeighbor = neighborDissipation / neighborCell._neighbors.Count;
+                collected += collectedFromNeighbor;
+            }
+            var newHormoneDensity = (int)(previousHormoneDensity - evaporated - dissipated + collected);
+            return newHormoneDensity;
+        }
+
+        private int ComputeNewCreatureDensity(WorldCell previousGenWorldCell, ColonyCell cell)
+        {
+            var previousCreatureDensity = previousGenWorldCell.GetCreatureDensity(cell.Colony);
+
+            // TODOtrans movement
+
+            // TODO overpressure rebound movement
+
+            return previousCreatureDensity;
         }
     }
 
