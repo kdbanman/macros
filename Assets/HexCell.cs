@@ -37,8 +37,7 @@ namespace HexEngine
 
         public void AddNeighbors(IEnumerable<WorldCell> neighbors)
         {
-            foreach (var neighbor in neighbors)
-            {
+            foreach (var neighbor in neighbors) {
                 _neighbors.Add(neighbor);
             }
         }
@@ -51,7 +50,7 @@ namespace HexEngine
         public IEnumerable<ColonyCell> ColonyCells { get { return _colonyCells.Values; } }
 
         public Coord Coord { get { return new Coord(Row, Col); } }
-
+        
         public void AddCreatures(Colony colony, int density)
         {
             _colonyCells[colony].CreatureDensity += density;
@@ -68,8 +67,7 @@ namespace HexEngine
 
         public void MutateToNextGen(WorldCell previousGenWorldCell)
         {
-            foreach (ColonyCell cell in _colonyCells.Values)
-            {
+            foreach (ColonyCell cell in _colonyCells.Values) {
                 cell.MoveHormoneDensity = ComputeNewHormoneDensity(previousGenWorldCell, cell);
                 cell.CreatureDensity = ComputeNewCreatureDensity(previousGenWorldCell, cell);
             }
@@ -82,27 +80,102 @@ namespace HexEngine
             double evaporated = (double)previousHormoneDensity * cell.Colony.HormoneEvaporationRate;
             // remove movement hormone that will be taken by neighboring cells
             double dissipated = (double)previousHormoneDensity * cell.Colony.HormoneDissipationRate;
-            // add movement hormone contributed by neighboring cells of the same colony
+            // add movement hormone dissipated from neighboring cells of the same colony
             double collected = 0.0;
-            foreach (var neighborCell in _neighbors)
-            {
+            foreach (var neighborCell in previousGenWorldCell._neighbors) {
                 double neighborDissipation = neighborCell.GetMoveHormoneDensity(cell.Colony) * cell.Colony.HormoneDissipationRate;
                 double collectedFromNeighbor = neighborDissipation / neighborCell._neighbors.Count;
                 collected += collectedFromNeighbor;
             }
-            var newHormoneDensity = (int)(previousHormoneDensity - evaporated - dissipated + collected);
+            // add movement hormone deposited by moving cells
+            double deposited = previousGenWorldCell.ComputeCreatureDensityMovementLoss(cell.Colony) * cell.Colony.HormoneCreatureDepositionRatio / cell.Colony.CreatureMoveRate;
+
+            var newHormoneDensity = (int)(previousHormoneDensity - evaporated - dissipated + collected + deposited);
             return newHormoneDensity;
         }
 
         private int ComputeNewCreatureDensity(WorldCell previousGenWorldCell, ColonyCell cell)
         {
-            var previousCreatureDensity = previousGenWorldCell.GetCreatureDensity(cell.Colony);
+            double previousCreatureDensity = previousGenWorldCell.GetCreatureDensity(cell.Colony);
 
-            // TODOtrans movement
+            // trans movement
+            double movementCreatureLoss = previousGenWorldCell.ComputeCreatureDensityMovementLoss(cell.Colony);
+            double movementCreatureGain = previousGenWorldCell.ComputeCreatureDensityMovementGain(cell.Colony);
 
-            // TODO overpressure rebound movement
+            // overpressure rebound movement
+            double reboundCreatureLoss = previousGenWorldCell.ComputeCreatureDensityReboundLoss(cell.Colony);
+            double reboundCreatureGain = previousGenWorldCell.ComputeCreatureDensityReboundGain(cell.Colony);
 
-            return previousCreatureDensity;
+            double creatureMultiplicationGain = previousGenWorldCell.ComputeCreatureDensityMultiplicationGain(cell.Colony);
+
+            return (int)(
+                previousCreatureDensity - 
+                movementCreatureLoss - 
+                reboundCreatureLoss + 
+                movementCreatureGain + 
+                reboundCreatureGain +
+                creatureMultiplicationGain);
+        }
+
+        private double ComputeCreatureDensityMultiplicationGain(Colony colony)
+        {
+            return GetCreatureDensity(colony) * colony.CreatureMultiplicationRate;
+        }
+
+        private double ComputeCreatureDensityReboundGain(Colony colony)
+        {
+            double collected = 0.0;
+            foreach(var neighborCell in _neighbors) {
+                double neighborRebound = neighborCell.ComputeCreatureDensityReboundLoss(colony);
+                double collectedFromNeighbor = neighborRebound / neighborCell._neighbors.Count;
+
+                collected += collectedFromNeighbor;
+            }
+
+            return collected;
+        }
+
+        private double ComputeCreatureDensityReboundLoss(Colony colony)
+        {
+            return GetCreatureDensity(colony) * colony.CreatureReboundRate;
+        }
+
+        public double ComputeCreatureDensityMovementLoss(Colony colony)
+        {
+            double currentCreatureDensity = GetCreatureDensity(colony);
+            double maxCreatureDensityLoss = (int)(ComputeOutwardHormoneGraident(colony) * colony.CreatureMoveRate);
+            return Math.Min(currentCreatureDensity, maxCreatureDensityLoss);
+        }
+
+        private int ComputeOutwardHormoneGraident(Colony colony)
+        {
+            int selfHormone = GetMoveHormoneDensity(colony);
+            int outwardGradient = 0;
+            foreach (var neighbor in _neighbors) {
+                int neighborHormone = neighbor.GetMoveHormoneDensity(colony);
+                if (neighborHormone > selfHormone)
+                    outwardGradient += neighborHormone - selfHormone;
+            }
+            return outwardGradient;
+        }
+
+        private double ComputeCreatureDensityMovementGain(Colony colony)
+        {
+            double creatureDensityGain = 0.0;
+
+            double selfHormone = GetMoveHormoneDensity(colony);
+            foreach (var neighbor in _neighbors) {
+                double neighborHormone = neighbor.GetMoveHormoneDensity(colony);
+                if (selfHormone > neighborHormone) {
+                    double inwardGradient = selfHormone - neighborHormone;
+                    double neighborOutwardGradient = neighbor.ComputeOutwardHormoneGraident(colony);
+                    double neighborCreatureLoss = neighbor.ComputeCreatureDensityMovementLoss(colony);
+
+                    creatureDensityGain += inwardGradient * neighborCreatureLoss / neighborOutwardGradient;
+                }
+            }
+
+            return creatureDensityGain;
         }
     }
 
@@ -118,5 +191,5 @@ namespace HexEngine
         public int MoveHormoneDensity { get; set; }
 
         public int CreatureDensity { get; set; }
-    } 
+    }
 }

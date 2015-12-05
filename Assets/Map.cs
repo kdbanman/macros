@@ -11,18 +11,18 @@ public class Map : MonoBehaviour
     [Range(0,100)]
     public int _worldHeight = 30;
 
-    [Range(0, 5)]
+    [Range(0, 50)]
     public float _updatesPerSecond = 1;
     private float _lastUpdateTime = 0;
 
     [Range(0.1f, 50)]
     public float _renderedCellSize = 5;
 
-    [Range(1, 100)]
-    public int _maxCreatureDensity = 50;
+    [Range(1, 50000)]
+    public int _maxCreatureDensity = 5000;
 
-    [Range(1, 100)]
-    public int _maxHormoneDensity = 50;
+    [Range(1, 50000)]
+    public int _maxHormoneDensity = 10000;
 
     private HexWorld _worldModel;
 
@@ -62,15 +62,13 @@ public class Map : MonoBehaviour
         _testColony = new Colony(0, "test colony");
 
         _worldModel.AddColony(_testColony);
-        
-        _worldModel.AddCreatures(_testColony, new Coord(1, 1), 30);
-        _worldModel.AddCreatures(_testColony, new Coord(0, 0), 10);
-        _worldModel.AddCreatures(_testColony, new Coord(2, 2), 40);
-        _worldModel.AddCreatures(_testColony, new Coord(3, 3), 30);
 
-        _worldModel.AddMoveHormone(_testColony, new Coord(1, 1), 430);
-        _worldModel.AddMoveHormone(_testColony, new Coord(1, 0), 500);
-        _worldModel.AddMoveHormone(_testColony, new Coord(2, 0), 350);
+        _worldModel.AddCreatures(_testColony, new Coord(3, 0), 4000);
+        _worldModel.AddCreatures(_testColony, new Coord(3, 1), 3000);
+        _worldModel.AddCreatures(_testColony, new Coord(3, 2), 2000);
+        _worldModel.AddCreatures(_testColony, new Coord(3, 3), 1000);
+
+        _worldModel.AddMoveHormone(_testColony, new Coord(5, 4), 9300);
         // end dummy data
     }
 
@@ -82,6 +80,8 @@ public class Map : MonoBehaviour
 
         _testColony.MaxCreatureDensity = _maxCreatureDensity;
         _testColony.MaxMoveHormoneDensity = _maxHormoneDensity;
+
+        DrawWorld();
 
         var secondsSinceUpdate = Time.time - _lastUpdateTime;
         var secondsBetweenUpdates = 1 / _updatesPerSecond;
