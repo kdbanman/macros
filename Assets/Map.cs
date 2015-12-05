@@ -169,7 +169,11 @@ public class Map : MonoBehaviour
             {
                 GameObject colonyCube = _creatureCubes[cellContainer.Coord];
                 float creatureRatio = (float)colonyCell.CreatureDensity / (float)colonyCell.Colony.MaxCreatureDensity;
-                Color colonyColor = Color.Lerp(Color.black, Color.white, creatureRatio);
+                Color colonyColor;
+                if (creatureRatio < 1)
+                    colonyColor = Color.Lerp(Color.black, Color.white, creatureRatio);
+                else
+                    colonyColor = Color.Lerp(Color.white, Color.green, creatureRatio - 1);
                 colonyCube.GetComponent<Renderer>().material.color = colonyColor;
 
                 GameObject hormoneCube = _hormoneCubes[cellContainer.Coord];
